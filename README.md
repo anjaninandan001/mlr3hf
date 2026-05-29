@@ -23,6 +23,6 @@ print(result2)
 
 **Output:**
 ```r
-~/.cache/mlr3hf/dataset/ibm/duorc/ParaphraseRC
+~/.cache/mlr3hf/dataset/scikit-learn/iris/default
 ~/.cache/mlr3hf/hub/scikit-learn_iris/snapshots/0bda0ce801be0fa2f464ff845a9d5ceae99aad7d/Iris.csv
 ```
