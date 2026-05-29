@@ -2,9 +2,21 @@ Package: mlr3hf
 Title: Convert Hugging Face Datasets into mlr3 Tasks
 Version: 0.0.0.9000
 Author: Anjani Nandan <anjaninandan599@gmail.com>
+Maintainer: Anjani Nandan <anjaninandan599@gmail.com>
 Description: Provides a simple interface to download tabular datasets
     from the Hugging Face Hub and convert them into mlr3 Task objects.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.3
+Imports:
+    httr,
+    jsonlite,
+    fs,
+    filelock,
+    rappdirs,
+    withr,
+    glue,
+    cli
+Suggests:
+    testthat (>= 3.0.0)
