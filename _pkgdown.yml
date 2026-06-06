@@ -1,0 +1,27 @@
+url: https://mlr3hf.netlify.app/
+template:
+  bootstrap: 5
+
+development:
+  mode: auto
+  version_label: default
+  version_tooltip: "Version"
+
+toc:
+  depth: 3
+
+navbar:
+  structure:
+    left:  [reference, book]
+    right: [search, github]
+  components:
+    home: ~
+    reference:
+      icon: fa fa-file-alt
+      text: Reference
+      href: reference/index.html
+    book:
+      text: mlr3book
+      icon: fa fa-link
+      href: https://mlr3book.mlr-org.com
+      
