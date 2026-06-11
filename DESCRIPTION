@@ -4,13 +4,13 @@ Version: 0.0.0.9000
 Authors@R: c(
     person("Toby", "Hocking",
            email = "toby.hocking@r-project.org",
-           role = c("aut","cre","ctb")),
+           role = c("cre")),
     person("Sebastian", "Fischer",
            email = "sebastian.fischer@stat.uni-muenchen.de",
-           role =c("aut","ctb")),
+           role =c("aut")),
     person("Anjani", "Nandan",
            email = "anjaninandan599@gmail.com",
-           role = c("aut","ctb"))
+           role = c("ctb"))
   )
 Description: Provides a simple interface to download tabular datasets
     from the Hugging Face Hub and convert them into mlr3 Task objects.
