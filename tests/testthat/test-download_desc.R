@@ -1,10 +1,10 @@
 test_that("testing download_desc", {
 skip_on_cran()
 skip_if_offline()
-res1<-download_desc("scikit-learn/iris")
-res2<-download_desc("scikit-learn/iris")
-expect_equal(res1$downloads, res2$downloads)
-expect_equal(res1$description, res2$description)
+iris.first.call <- download_desc("scikit-learn/iris")
+iris.second.call <- download_desc("scikit-learn/iris")
+expect_equal(iris.first.call$downloads, iris.second.call$downloads)
+expect_equal(iris.first.call$description, iris.second.call$description)
 })
 
 test_that("download_desc fails on error", {
@@ -30,10 +30,10 @@ test_that("files_metadata TRUE and FALSE return different responses", {
   skip_on_cran()
   skip_if_offline()
   
-  res1 <- download_desc("scikit-learn/iris", files_metadata = FALSE)
-  res2 <- download_desc("scikit-learn/iris", files_metadata = TRUE)
+  iris.first.call <- download_desc("scikit-learn/iris", files_metadata = FALSE)
+  iris.second.call <- download_desc("scikit-learn/iris", files_metadata = TRUE)
   
-  expect_false(identical(res1, res2))
+  expect_false(identical(iris.first.call, iris.second.call))
 })
 
 test_that("download_desc handles non-existent repo gracefully", {
@@ -49,8 +49,8 @@ test_that("download_desc handles non-existent repo gracefully", {
 test_that("download_desc returns expected fields", {
 skip_on_cran()
 skip_if_offline()
-res1 <- download_desc("scikit-learn/iris")
-res2 <- download_desc("scikit-learn/iris")
-expect_equal(res1$usedStorage, 5309549) #this value may change if the dataset is updated
-expect_equal(res1$siblings,res2$siblings) # these features i.e usedStorage, description and siblings will be used in HFData.R
+iris.first.call <- download_desc("scikit-learn/iris")
+iris.second.call <- download_desc("scikit-learn/iris")
+expect_equal(iris.first.call$usedStorage, 5309549) #this value may change if the dataset is updated
+expect_equal(iris.first.call$siblings, iris.second.call$siblings) # these features i.e usedStorage, description and siblings will be used in HFData.R
 })
