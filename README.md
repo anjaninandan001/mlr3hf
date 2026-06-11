@@ -1,66 +1,60 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- badges: start -->
-  [![R-CMD-check](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml)
-  <!-- badges: end -->
 
-## Getting Started with `mlr3hf`
+[![R-CMD-check](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
 
-This package provides utilities for working with Hugging Face datasets. To use it, specify the repository ID, target variable, and whether the dataset is stored as a parquet file.
+# mlr3hf
 
-### Installation
+mlr3hf provides a simple interface to download datasets from the Hugging
+Face Hub and convert them into mlr3 Task objects.
 
-You can install the package using one of the following methods:
+## Installation
 
-#### Option 1: Install from GitHub
+You can install the development version of mlr3hf from
+[GitHub](https://github.com/anjaninandan001/mlr3hf) with:
 
-```r
-# Clone the repository
-git clone https://github.com/anjaninandan001/mlr3hf
+``` r
+# install.packages("pak")
+pak::pak("anjaninandan001/mlr3hf")
 ```
 
-#### Option 2: Install the package directly
+## Example
 
-```r
-install.packages("mlr3hf")
-```
-
-### Usage
-
-After installation, load the package and use the available functions:
-
-```r
-htsk()
-```
-
-For additional details, refer to the package documentation:
-
-```r
-help(package = "mlr3hf")
-```
-
-### Example
-
-```r
-dt <- HFData$new(
+``` r
+#As of now you can run this to check function is working or not.
+library(mlr3hf)
+# Download a parquet dataset
+result1 <- cached(
   repo_id = "scikit-learn/iris",
-  file_name = "Iris.csv",
-  parquet = FALSE,
-  target = "Species"
+  config  = "default",
+  parquet = TRUE,
+  fun     = download_parquet
 )
+
+# Download a CSV dataset
+result2 <- cached(
+  repo_id   = "scikit-learn/iris",
+  file_name = "Iris.csv",
+  parquet   = FALSE,
+  fun       = download_hfhub
+)
+
+print(result1)
+print(result2)
 ```
 
-### Output
+## Parameters
 
-```r
-Wait....results in progress, we are developing
-```
+| Parameter   | Description                                                               |
+|-------------|---------------------------------------------------------------------------|
+| `repo_id`   | Hugging Face dataset repository identifier.                               |
+| `file_name` | Name of the dataset file within the repository.                           |
+| `parquet`   | Logical value indicating whether the dataset is in parquet format.        |
+| `fun`       | Function to use for downloading (`download_parquet` or `download_hfhub`). |
 
-### Parameters
+## Note
 
-| Parameter | Description |
-|-----------|-------------|
-| `repo_id` | Hugging Face dataset repository identifier. |
-| `file_name` | Name of the dataset file within the repository. |
-| `parquet` | Logical value indicating whether the dataset is stored in parquet format. |
-| `target` | Name of the target/dependent variable. |
-
-> **Note:** The package is currently under active development. Some features may be experimental and outputs may change in future releases.
+> The package is currently under active development. Some features may
+> be experimental and outputs may change in future releases.
