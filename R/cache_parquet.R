@@ -15,12 +15,12 @@
 #' }
 #' cache_parquet(repo_id="scikit-learn/iris",config="default")
 #' @export
-cache_parquet <- function(repo_id, config=NULL, split = NULL, ...) {
+cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
     cache_dir <- mlr3hf_cache_dir()
     if (is.null(config)) {
         stop("requires config")
     }
-    data_dir <- fs::path(cache_dir, "dataset")
+    data_dir <- fs::path(cache_dir, "datasets")
     base_url <- "https://datasets-server.huggingface.co/parquet?dataset="
     api_url <- glue::glue("{base_url}{repo_id}")
     response <- httr::GET(api_url)
@@ -117,7 +117,19 @@ cache_parquet <- function(repo_id, config=NULL, split = NULL, ...) {
         on.exit(filelock::unlock(lock), add = TRUE, after = FALSE)
 
         withr::with_tempfile("tmp", {
-            utils::download.file(url, tmp, mode = "wb")
+            headers <- hub_headers()
+
+            response <- httr::GET(
+                url,
+                httr::write_disk(tmp, overwrite = TRUE),
+                httr::add_headers(.headers = headers)
+            )
+
+            if (response$status_code >= 400) {
+                cli::cli_abort(
+                    "Download failed ({response$status_code}): {url}"
+                )
+            }
             if (!fs::file_exists(tmp)) {
                 cli::cli_abort("Download failed: {url}")
             }
