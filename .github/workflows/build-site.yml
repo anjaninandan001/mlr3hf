@@ -1,0 +1,58 @@
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+name: build-website
+jobs:
+  build-website:
+    runs-on: ubuntu-latest
+    container: mlrorg/mlr3-website:latest
+    env:
+      GITHUB_PAT: ${{ secrets.PAT_GITHUB_PR }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Install R dependencies
+        run: |
+          Rscript -e 'install.packages("remotes")'
+          Rscript -e 'remotes::install_deps(dependencies = TRUE)'
+
+      - name: Install package
+        run: R CMD INSTALL .
+
+      - name: Install pkgdown
+        run: Rscript -e 'install.packages("pkgdown")'
+
+      - name: Build pkgdown site
+        run: Rscript -e 'pkgdown::build_site()'
+
+      - name: Deploy Netlify preview
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: nwtgck/actions-netlify@v3
+        with:
+          publish-dir: docs
+          production-deploy: false
+          github-token: ${{ secrets.PAT_GITHUB_PR }}
+          deploy-message: "Deploy preview for PR #${{ github.event.number }}"
+          enable-pull-request-comment: true
+          enable-commit-comment: false
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+
+      - name: Deploy to GitHub Pages
+        if: ${{ github.event_name == 'push' }}
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          token: ${{ secrets.PAT_GITHUB_PR }}
+          git-config-name: anjaninandan001
+          git-config-email: <>
+          commit-message: 'deploy website'
+          branch: gh-pages
+          folder: docs
+          single-commit: true
