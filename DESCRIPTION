@@ -23,6 +23,7 @@ Config/Needs/website: pkgdown
 Imports:
     httr,
     jsonlite,
+    data.table,
     fs,
     filelock,
     rappdirs,
