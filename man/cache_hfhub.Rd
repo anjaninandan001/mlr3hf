@@ -2,39 +2,72 @@
 % Please edit documentation in R/cache_hfhub.R
 \name{cache_hfhub}
 \alias{cache_hfhub}
-\title{cache_hfhub}
+\title{Cache a File from a Hugging Face Hub Repository}
 \usage{
 cache_hfhub(
   repo_id,
-  file_name = NULL,
+  file_name,
   local_files_only = FALSE,
   revision = "main",
   ...
 )
 }
 \arguments{
-\item{repo_id}{repo id of the dataset}
+\item{repo_id}{Character string. The repository ID of the dataset on
+the Hugging Face Hub, in the form \code{"user_id/repo_name"}
+(e.g. \code{"scikit-learn/iris"}).}
 
-\item{file_name}{file name e.g. "iris.csv"}
+\item{file_name}{Character string. The name of the file to download
+from the repository, e.g. \code{"iris.csv"}.}
 
-\item{local_files_only}{can if data is already present in the disk then that can be accessed}
+\item{local_files_only}{Logical. If \code{TRUE}, only the local
+cache is checked and no network request is made; an error is
+raised if the file is not already cached. If \code{FALSE}
+(default), the file is downloaded if not already present, or if a
+newer revision is available.}
 
-\item{revision}{it helps in getting any commit_hash, branch datasets}
+\item{revision}{Character string. The branch, tag, or commit hash to
+download the file from. Defaults to \code{"main"}.}
 
-\item{...}{additional arguments passed to httr::GET}
+\item{...}{Additional arguments for future use.}
 }
 \value{
-it returns the path of the dataset were its downloaded
+Character string giving the local file path where the
+cached file is stored.
 }
 \description{
-it helps in caching the canonical dataset means the original dataset that are on hf.
+Downloads and caches a specific file from the canonical (original)
+version of a dataset repository on the Hugging Face Hub — that is,
+the dataset as published by its authors, rather than the
+auto-generated Parquet conversion (see \code{\link{cache_parquet}}
+for that). If the file has already been cached locally, it is
+reused instead of being downloaded again.
+}
+\details{
+Files are cached in a local directory following the Hugging Face
+Hub caching convention, keyed by \code{repo_id}, \code{revision},
+and \code{file_name}. Subsequent calls with the same arguments will
+return the cached path without re-downloading, unless the remote
+file has changed.
 }
 \examples{
-\dontrun{
-  cache_hfhub(
-    repo_id   = "scikit-learn/iris",
-    file_name = "iris.csv",
-    fun       = download_hub
-  )
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+cache_hfhub(
+  repo_id   = "scikit-learn/iris",
+  file_name = "iris.csv"
+)
+
+# Use a cached copy only, without attempting a network request
+cache_hfhub(
+  repo_id          = "scikit-learn/iris",
+  file_name        = "iris.csv",
+  local_files_only = TRUE
+)
+\dontshow{\}) # examplesIf}
 }
+\seealso{
+\code{\link{cache_parquet}} for caching the auto-converted Parquet
+version of a dataset instead.
+
+\url{https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache}
 }

@@ -2,31 +2,76 @@
 % Please edit documentation in R/cache_parquet.R
 \name{cache_parquet}
 \alias{cache_parquet}
-\title{cache_parquet}
+\title{Cache a Parquet Export of a Hugging Face Dataset}
 \usage{
-cache_parquet(repo_id, config = NULL, split = NULL, ...)
+cache_parquet(
+  repo_id,
+  revision = "refs\%2Fconvert\%2Fparquet",
+  config,
+  split = NULL,
+  ...
+)
 }
 \arguments{
-\item{repo_id}{repo id of the dataset}
+\item{repo_id}{Character string. The repository ID of the dataset on
+the Hugging Face Hub, in the form \code{"user_id/repo_name"}
+(e.g. \code{"fancyzhx/amazon_polarity"}).}
 
-\item{config}{if dataset have no config give config as default or you can check the repository config is mainly a folder}
+\item{revision}{Character string. A specific commit hash to pin the
+download to, instead of using the latest revision of the
+\code{refs/convert/parquet} branch. Defaults to \code{NULL}, which
+resolves to the most recent commit.}
 
-\item{split}{user have option to select a specific split}
+\item{config}{Character string. The dataset configuration name. Many
+datasets expose only one configuration, in which case
+\code{"default"} can usually be used. If unsure, inspect the
+repository's \code{refs/convert/parquet} branch on the Hub to see
+the available configuration folders.}
 
-\item{...}{additional arguments for future}
+\item{split}{Character string. The dataset split to cache, such as
+\code{"train"}, \code{"test"}, or \code{"validation"}. If
+\code{NULL} (default), all available splits for the given
+configuration are cached.}
+
+\item{...}{Additional arguments, reserved for future use.}
 }
 \value{
-list containing split and the url of the split
+A named \code{list} with one entry per cached split. Each
+entry is itself a list containing:
+\describe{
+\item{split}{Character string giving the split name.}
+\item{path}{Character string giving the local file path where
+the cached Parquet file was saved.}
+}
 }
 \description{
-it helps in caching the dataset which in the branch refs/convert/parquet
+Downloads and caches the Parquet files for a dataset hosted on the
+Hugging Face Hub, using the auto-generated \code{refs/convert/parquet}
+branch. This branch contains a Parquet conversion of the dataset that
+Hugging Face maintains automatically, which avoids the need to load
+the dataset via its original (often script-based) loading format.
+}
+\details{
+Files are downloaded from the
+\code{refs/convert/parquet} branch maintained by Hugging Face, not
+from the dataset's default branch. Large datasets may be split
+across multiple Parquet shards; all matching shards for the
+requested split are downloaded and cached.
 }
 \examples{
-\dontrun{
-  cache_parquet(
-    repo_id   = "scikit-learn/iris",
-    config="default"
-  )
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
+cache_parquet(
+  repo_id = "scikit-learn/iris",
+  config  = "default"
+)
+
+cache_parquet(
+  repo_id = "fancyzhx/amazon_polarity",
+  config  = "amazon_polarity",
+  split   = "train"
+)
+\dontshow{\}) # examplesIf}
 }
-cache_parquet(repo_id="scikit-learn/iris",config="default")
+\seealso{
+\url{https://huggingface.co/docs/datasets-server/en/parquet}
 }

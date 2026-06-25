@@ -27,6 +27,7 @@ Imports:
     filelock,
     rappdirs,
     withr,
+    curl,
     glue,
     cli
 Suggests:

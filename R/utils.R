@@ -13,7 +13,7 @@ hub_url <- function(
   glue::glue("{base}/{repo_type}s/{repo_id}/resolve/{revision}/{filename}")
 }
 #' In hugginface some dataset are private some are gated for all this function authorize the user to use the dataset
-#' @noRd 
+#' @noRd
 hub_headers <- function() {
   headers <- c("user-agent" = "mlr3hf/0.0.1")
   token <- mlr3hf_token()
@@ -63,7 +63,7 @@ repo_folder_name <- function(repo_id) {
   return(result)
 }
 #' get_file_metadata it helps in getting the commit_hash and etag
-#' @noRd 
+#' @noRd
 get_file_metadata <- function(url) {
   headers <- hub_headers()
   headers["Accept-Encoding"] <- "identity"
@@ -139,4 +139,87 @@ link_or_copy <- function(blob_path, pointer_path, owned, storage_folder) {
     fs::file_copy(blob_path, pointer_path, overwrite = TRUE)
   }
   return(pointer_path)
+}
+
+#' @noRd
+# It helps in downloading the datasets using url
+download_file <- function(
+  url,
+  blob_path,
+  filename,
+  expected_size = NA,
+  max_retries = mlr3hf_retries()
+) {
+  attempt <- 1
+  success <- FALSE
+
+  while (attempt <= max_retries && !success) {
+    result <- tryCatch(
+      {
+        withr::with_tempfile("tmp", {
+          lock <- filelock::lock(paste0(blob_path, ".lock"))
+          on.exit(
+            {
+              filelock::unlock(lock)
+            },
+            add = TRUE
+          )
+
+          bar_id <- cli::cli_progress_bar(
+            name = if (attempt > 1) {
+              glue::glue("{filename} (retry {attempt})")
+            } else {
+              filename
+            },
+            total = if (is.numeric(expected_size)) expected_size else NA,
+            type = "download"
+          )
+
+          progress <- function(down, up) {
+            if (down[1] != 0) {
+              cli::cli_progress_update(
+                total = down[1],
+                set = down[2],
+                id = bar_id
+              )
+            }
+            TRUE
+          }
+
+          handle <- curl::new_handle(
+            noprogress = FALSE,
+            progressfunction = progress
+          )
+          curl::handle_setheaders(handle, .list = as.list(hub_headers()))
+
+          curl::curl_download(url, tmp, handle = handle, quiet = FALSE)
+
+          if (!fs::file_exists(tmp) || fs::file_size(tmp) == 0) {
+            stop("Downloaded file is empty or missing")
+          }
+
+          cli::cli_progress_done(id = bar_id)
+          fs::file_move(tmp, blob_path)
+        })
+        TRUE
+      },
+      error = function(err) {
+        cli::cli_warn("Attempt {attempt}/{max_retries} failed: {err$message}")
+        FALSE
+      }
+    )
+
+    if (isTRUE(result)) {
+      success <- TRUE
+    } else {
+      attempt <- attempt + 1
+      if (attempt <= max_retries) {
+        Sys.sleep(2^attempt)
+      }
+    }
+  }
+
+  if (!success) {
+    cli::cli_abort("Download failed after {max_retries} attempts: {.url {url}}")
+  }
 }

@@ -1,21 +1,67 @@
-#' @title cache_parquet
-#' @description it helps in caching the dataset which in the branch refs/convert/parquet
-#' @param repo_id repo id of the dataset
-#' @param config if dataset have no config give config as default or you can check the repository config is mainly a folder
-#' @param split user have option to select a specific split
-#' @param ... additional arguments for future
+#' Cache a Parquet Export of a Hugging Face Dataset
 #'
-#' @return list containing split and the url of the split
-#' @examples
-#' \dontrun{
-#'   cache_parquet(
-#'     repo_id   = "scikit-learn/iris",
-#'     config="default"
-#'   )
-#' }
-#' cache_parquet(repo_id="scikit-learn/iris",config="default")
+#' Downloads and caches the Parquet files for a dataset hosted on the
+#' Hugging Face Hub, using the auto-generated \code{refs/convert/parquet}
+#' branch. This branch contains a Parquet conversion of the dataset that
+#' Hugging Face maintains automatically, which avoids the need to load
+#' the dataset via its original (often script-based) loading format.
+#'
+#' @param repo_id Character string. The repository ID of the dataset on
+#'   the Hugging Face Hub, in the form \code{"user_id/repo_name"}
+#'   (e.g. \code{"fancyzhx/amazon_polarity"}).
+#' @param config Character string. The dataset configuration name. Many
+#'   datasets expose only one configuration, in which case
+#'   \code{"default"} can usually be used. If unsure, inspect the
+#'   repository's \code{refs/convert/parquet} branch on the Hub to see
+#'   the available configuration folders.
+#' @param split Character string. The dataset split to cache, such as
+#'   \code{"train"}, \code{"test"}, or \code{"validation"}. If
+#'   \code{NULL} (default), all available splits for the given
+#'   configuration are cached.
+#' @param revision Character string. A specific commit hash to pin the
+#'   download to, instead of using the latest revision of the
+#'   \code{refs/convert/parquet} branch. Defaults to \code{NULL}, which
+#'   resolves to the most recent commit.
+#' @param ... Additional arguments, reserved for future use.
+#'
+#' @return A named \code{list} with one entry per cached split. Each
+#'   entry is itself a list containing:
+#'   \describe{
+#'     \item{split}{Character string giving the split name.}
+#'     \item{path}{Character string giving the local file path where
+#'       the cached Parquet file was saved.}
+#'   }
+#'
+#' @details
+#' Files are downloaded from the
+#' \code{refs/convert/parquet} branch maintained by Hugging Face, not
+#' from the dataset's default branch. Large datasets may be split
+#' across multiple Parquet shards; all matching shards for the
+#' requested split are downloaded and cached.
+#'
+#' @examplesIf interactive()
+#' cache_parquet(
+#'   repo_id = "scikit-learn/iris",
+#'   config  = "default"
+#' )
+#'
+#' cache_parquet(
+#'   repo_id = "fancyzhx/amazon_polarity",
+#'   config  = "amazon_polarity",
+#'   split   = "train"
+#' )
+#'
+#' @seealso
+#' \url{https://huggingface.co/docs/datasets-server/en/parquet}
+#'
 #' @export
-cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
+cache_parquet <- function(
+    repo_id,
+    revision = "refs%2Fconvert%2Fparquet",
+    config,
+    split = NULL,
+    ...
+) {
     cache_dir <- mlr3hf_cache_dir()
     if (is.null(config)) {
         stop("requires config")
@@ -35,13 +81,14 @@ cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
         dataset = as.character(data$parquet_files$dataset),
         config = as.character(data$parquet_files$config),
         split = as.character(data$parquet_files$split),
-        url = as.character(data$parquet_files$url),
+        #url = as.character(data$parquet_files$url),
         filename = as.character(data$parquet_files$filename),
         size = as.numeric(data$parquet_files$size),
         stringsAsFactors = FALSE
     )
 
     filtered_files <- parquet_files[parquet_files$config == config, ]
+    b_url <- mlr3hf_hub_url()
 
     if (nrow(filtered_files) == 0) {
         cli::cli_abort(
@@ -60,15 +107,25 @@ cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
     }
 
     snapshot_paths <- list()
-
     for (i in seq_len(nrow(filtered_files))) {
         curr_split <- filtered_files$split[i]
-        url <- filtered_files$url[i]
         filename <- filtered_files$filename[i]
+        expected_size <- filtered_files$size[i]
+
+        url <- glue::glue(
+            "{b_url}/datasets/{repo_id}/resolve/{revision}/{config}/{curr_split}/{filename}"
+        )
 
         metadata <- get_file_metadata(url)
         etag <- metadata$etag
         commit_hash <- metadata$commit_hash
+        error_code <- metadata$error_code
+
+        if (!is.null(error_code)) {
+            cli::cli_abort(
+                "Metadata fetch failed for {url} , Correct your input. Commit_hash for 'refs/convert/parquet' and other branch are different. "
+            )
+        }
 
         blob_dir <- fs::path(
             data_dir,
@@ -112,29 +169,17 @@ cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
             )
             next
         }
-
-        lock <- filelock::lock(paste0(blob_path, ".lock"))
-        on.exit(filelock::unlock(lock), add = TRUE, after = FALSE)
-
-        withr::with_tempfile("tmp", {
-            headers <- hub_headers()
-
-            response <- httr::GET(
-                url,
-                httr::write_disk(tmp, overwrite = TRUE),
-                httr::add_headers(.headers = headers)
-            )
-
-            if (response$status_code >= 400) {
-                cli::cli_abort(
-                    "Download failed ({response$status_code}): {url}"
-                )
-            }
-            if (!fs::file_exists(tmp)) {
-                cli::cli_abort("Download failed: {url}")
-            }
-            file.rename(tmp, blob_path)
-        })
+        #dataset will download here
+        download_file(
+            url,
+            blob_path,
+            filename,
+            expected_size,
+            max_retries = mlr3hf_retries()
+        )
+        if (!fs::file_exists(blob_path)) {
+            cli::cli_abort("Blob missing after download for: {curr_split}")
+        }
 
         link_or_copy(
             blob_path,
@@ -142,6 +187,11 @@ cache_parquet <- function(repo_id, config = NULL, split = NULL, ...) {
             owned = TRUE,
             as.character(data_dir)
         )
+
+        if (!fs::file_exists(snapshot_path)) {
+            message("Snapshot link failed for: {curr_split}")
+        }
+
         snapshot_paths[[curr_split]] <- c(
             snapshot_paths[[curr_split]],
             snapshot_path

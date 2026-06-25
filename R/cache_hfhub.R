@@ -1,29 +1,64 @@
-#' @title cache_hfhub
-#' @description it helps in caching the canonical dataset means the original dataset that are on hf.
-#' @param repo_id repo id of the dataset
-#' @param file_name file name e.g. "iris.csv"
-#' @param local_files_only can if data is already present in the disk then that can be accessed
-#' @param revision it helps in getting any commit_hash, branch datasets
-#' @param ... additional arguments passed to httr::GET
+#' Cache a File from a Hugging Face Hub Repository
 #'
-#' @return it returns the path of the dataset were its downloaded
-#' @examples
-#' \dontrun{
-#'   cache_hfhub(
-#'     repo_id   = "scikit-learn/iris",
-#'     file_name = "iris.csv",
-#'     fun       = download_hub
-#'   )
-#' }
+#' Downloads and caches a specific file from the canonical (original)
+#' version of a dataset repository on the Hugging Face Hub — that is,
+#' the dataset as published by its authors, rather than the
+#' auto-generated Parquet conversion (see \code{\link{cache_parquet}}
+#' for that). If the file has already been cached locally, it is
+#' reused instead of being downloaded again.
+#'
+#' @param repo_id Character string. The repository ID of the dataset on
+#'   the Hugging Face Hub, in the form \code{"user_id/repo_name"}
+#'   (e.g. \code{"scikit-learn/iris"}).
+#' @param file_name Character string. The name of the file to download
+#'   from the repository, e.g. \code{"iris.csv"}.
+#' @param local_files_only Logical. If \code{TRUE}, only the local
+#'   cache is checked and no network request is made; an error is
+#'   raised if the file is not already cached. If \code{FALSE}
+#'   (default), the file is downloaded if not already present, or if a
+#'   newer revision is available.
+#' @param revision Character string. The branch, tag, or commit hash to
+#'   download the file from. Defaults to \code{"main"}.
+#' @param ... Additional arguments for future use.
+#'
+#' @return Character string giving the local file path where the
+#'   cached file is stored.
+#'
+#' @details
+#' Files are cached in a local directory following the Hugging Face
+#' Hub caching convention, keyed by \code{repo_id}, \code{revision},
+#' and \code{file_name}. Subsequent calls with the same arguments will
+#' return the cached path without re-downloading, unless the remote
+#' file has changed.
+#'
+#' @examplesIf interactive()
+#' cache_hfhub(
+#'   repo_id   = "scikit-learn/iris",
+#'   file_name = "iris.csv"
+#' )
+#'
+#' # Use a cached copy only, without attempting a network request
+#' cache_hfhub(
+#'   repo_id          = "scikit-learn/iris",
+#'   file_name        = "iris.csv",
+#'   local_files_only = TRUE
+#' )
+#'
+#' @seealso
+#' \code{\link{cache_parquet}} for caching the auto-converted Parquet
+#' version of a dataset instead.
+#'
+#' \url{https://huggingface.co/docs/huggingface_hub/en/guides/manage-cache}
+#'
 #' @export
 cache_hfhub <- function(
     repo_id,
-    file_name = NULL,
+    file_name,
     local_files_only = FALSE,
     revision = "main",
     ...
 ) {
-    cache_dir = mlr3hf_cache_dir()
+    cache_dir <- mlr3hf_cache_dir()
     storage_folder <- fs::path(cache_dir, "hub", repo_folder_name(repo_id))
     if (is.null(file_name)) {
         stop("require filename")
@@ -39,8 +74,6 @@ cache_hfhub <- function(
             return(pointer_path)
         }
     }
-    etag <- NULL
-    commit_hash <- NULL
     if (!local_files_only) {
         url <- hub_url(repo_id, file_name, revision = revision)
         metadata <- get_file_metadata(url)
@@ -61,6 +94,7 @@ cache_hfhub <- function(
                 "Distant resource does not have an ETag, we won't be able to reliably ensure reproducibility."
             ))
         }
+        expected_size <- metadata$expected_size
     }
 
     # etag is NULL == we don't have a connection or we passed local_files_only.
@@ -145,23 +179,13 @@ cache_hfhub <- function(
         link_or_copy(blob_path, snapshot_path, owned = FALSE, storage_folder)
         return(snapshot_path)
     }
-
-    lock <- filelock::lock(paste0(blob_path, ".lock"))
-    on.exit(filelock::unlock(lock), add = TRUE)
-
-    withr::with_tempfile("tmp", {
-        download_hfhub(
-            repo_id = repo_id,
-            file_name = file_name,
-            revision = "main",
-            destfile = tmp
-        )
-        if (!fs::file_exists(tmp)) {
-            cli::cli_abort("Download failed: file not found at {tmp}")
-        }
-
-        file.rename(tmp, blob_path)
-    })
+    download_file(
+        url,
+        blob_path,
+        file_name,
+        expected_size,
+        max_retries = mlr3hf_retries()
+    )
     link_or_copy(blob_path, snapshot_path, owned = TRUE, storage_folder)
 
     return(snapshot_path)
