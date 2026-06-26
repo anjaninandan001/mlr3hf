@@ -1,6 +1,3 @@
-#' @importFrom data.table data.table as.data.table rbindlist
-NULL
-
 #' @title List Datasets from Hugging Face Hub
 #'
 #' @name list_datasets
@@ -30,6 +27,10 @@ NULL
 #' @references
 #' \url{https://huggingface.co/docs/hub/api}
 #'
+#' @importFrom data.table data.table as.data.table rbindlist
+NULL
+#' @importFrom checkmate assertInt
+#'
 #' @export
 #' @examples
 #' \dontrun{
@@ -37,9 +38,8 @@ NULL
 #' dat <- list_datasets(num_of_dataset = 500, chunk_size = 100)
 #' }
 list_datasets <- function(num_of_dataset = 100, chunk_size = 100) {
-    if (num_of_dataset < 1 || chunk_size < 1) {
-        stop("num_of_dataset should be positive", call. = FALSE)
-    }
+    assertInt(num_of_dataset, lower = 1)
+    assertInt(chunk_size, lower = 1)
     base_url <- mlr3hf_parquet_url()
     offset <- 0
     all_data <- list()
