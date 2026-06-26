@@ -4,7 +4,7 @@ test_that("list_dataset returns an error when <1 is given as input", {
 
     expect_error(
         list_datasets(-1),
-        "num_of_dataset should be positive"
+        "Assertion on 'num_of_dataset' failed: Element 1 is not >= 1."
     )
 })
 test_that("list_dataset column types are as expected", {
@@ -13,6 +13,6 @@ test_that("list_dataset column types are as expected", {
 
     datasets <- list_datasets(num_of_dataset = 5)
     expect_type(datasets$id, "character")
-    expect_type(datasets$gated, "character")
+    expect_type(datasets$gated, "logical")
     expect_type(datasets$downloads, "integer")
 })
