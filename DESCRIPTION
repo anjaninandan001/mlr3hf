@@ -25,6 +25,7 @@ Imports:
     jsonlite,
     data.table,
     fs,
+    checkmate,
     filelock,
     rappdirs,
     withr,
