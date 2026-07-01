@@ -4,11 +4,9 @@ mlr3hf_hub_url <- function() {
     Sys.getenv("MLR3HF_HUB_URL", "https://huggingface.co")
   )
 }
-mlr3hf_cache_dir <- function() {
-  getOption(
-    "mlr3hf.cache_dir",
-    Sys.getenv("MLR3HF_CACHE_DIR", rappdirs::user_cache_dir("mlr3hf"))
-  )
+mlr3hf_cache_dir <- function(){
+    getOption("mlr3hf.cache_dir",
+    Sys.getenv("MLR3HF_CACHE_DIR", rappdirs::user_cache_dir("huggingface")))
 }
 
 mlr3hf_parquet <- function() {
