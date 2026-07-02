@@ -4,7 +4,13 @@
 \alias{list_datasets}
 \title{List Datasets from Hugging Face Hub}
 \usage{
-list_datasets(num_of_dataset = 100, chunk_size = 100)
+list_datasets(
+  num_of_dataset = 100,
+  chunk_size = 100,
+  search = NULL,
+  author = NULL,
+  ...
+)
 }
 \arguments{
 \item{num_of_dataset}{(\code{integer(1)})\cr
@@ -12,30 +18,37 @@ Total number of records to retrieve. Must be a positive integer.
 Default is \code{100}.}
 
 \item{chunk_size}{(\code{integer(1)})\cr
-Number of records to request per API call (chunk size). Values greater
-than 100 are silently capped to 100, since that is the maximum allowed
-by the Hugging Face Hub API.
+Number of records to request per API call.
 Default is \code{100}.}
+
+\item{search}{(\code{character(1)})\cr
+Optional search keyword to filter datasets by. Default is \code{NULL}.}
+
+\item{author}{(\code{character(1)})\cr
+Optional author/organization name to filter datasets by.
+Default is \code{NULL}.}
+
+\item{...}{Additional arguments passed on to \code{get_with_retry()}, e.g.
+\code{max_retries}.}
 }
 \value{
 (\code{data.table()}) of results with columns \code{id}, \code{gated}, and
 \code{downloads}, or an empty \code{data.table()} if no datasets are found.
 }
 \description{
-This function allows to query datasets hosted on
-\url{https://huggingface.co/datasets} via the Hugging Face Hub API,
-returning metadata such as dataset id, gated status, and download counts.
-}
-\details{
-This function relies on \code{num_of_dataset} to control
-how many records are fetched
+Query datasets hosted on \url{https://huggingface.co/datasets} via the
+Hugging Face Hub API, returning metadata such as dataset id, gated
+status, and download counts.
 }
 \examples{
 \dontrun{
 dat <- list_datasets(num_of_dataset = 50)
 dat <- list_datasets(num_of_dataset = 500, chunk_size = 100)
+dat <- list_datasets(author = "a4n9i")
 }
 }
 \references{
 \url{https://huggingface.co/docs/hub/api}
+
+#' @importFrom data.table data.table as.data.table rbindlist
 }
