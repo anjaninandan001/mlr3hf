@@ -223,3 +223,67 @@ download_file <- function(
     cli::cli_abort("Download failed after {max_retries} attempts: {.url {url}}")
   }
 }
+#' @noRd
+get_with_retry <- function(
+  url,
+  query = NULL,
+  headers = NULL,
+  max_retries = mlr3hf_retries(),
+  ...
+) {
+  attempt <- 1
+
+  repeat {
+    result <- tryCatch(
+      {
+        args <- list(url = url)
+        if (!is.null(headers)) {
+          args <- c(args, list(httr::add_headers(.headers = headers)))
+        }
+        if (!is.null(query)) {
+          args$query <- query
+        }
+        do.call(httr::GET, args)
+      },
+      error = function(e) e
+    )
+    network_failed <- inherits(result, "error")
+    status_failed <- !network_failed &&
+      (httr::status_code(result) == 429 ||
+        httr::status_code(result) >= 500)
+
+    if (!network_failed && !status_failed) {
+      return(result)
+    }
+
+    attempt <- attempt + 1
+
+    if (attempt <= max_retries) {
+      message(
+        "Attempt ",
+        attempt - 1,
+        " failed, retrying in ",
+        2^attempt
+      )
+      Sys.sleep(2^attempt)
+    } else {
+      if (network_failed) {
+        stop(
+          "Request failed after ",
+          max_retries,
+          " attempts: ",
+          conditionMessage(result),
+          call. = FALSE
+        )
+      } else {
+        stop(
+          "Request failed after ",
+          max_retries,
+          " attempts. Status: ",
+          httr::status_code(result),
+          call. = FALSE
+        )
+      }
+    }
+  }
+}
