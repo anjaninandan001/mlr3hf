@@ -1,0 +1,39 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://huggingface.co/api/datasets/scikit-learn/iris/revision/main
+  response:
+    status: 200
+    headers:
+      access-control-allow-origin: https://huggingface.co
+      access-control-expose-headers: X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      access-control-max-age: '86400'
+      content-encoding: gzip
+      content-type: application/json; charset=utf-8
+      cross-origin-opener-policy: same-origin
+      date: Sat, 04 Jul 2026 15:10:51 GMT
+      etag: W/"508-jRGgOejgCHqcW8cUNg6jHHhgf5s"
+      ratelimit: '"api";r=497;t=296'
+      ratelimit-policy: '"fixed window";"api";q=500;w=300'
+      referrer-policy: strict-origin-when-cross-origin
+      vary:
+      - Origin
+      - Accept-Encoding
+      via: 1.1 72f86fdfa3e076311483d5344a4e7478.cloudfront.net (CloudFront)
+      x-amz-cf-id: fYJ7w9FFhWmsINGZf-kum37oKwoxzmnXrF4CyOZR6C__DAlZVsAFhg==
+      x-amz-cf-pop: DEL51-P7
+      x-cache: Miss from cloudfront
+      x-powered-by: huggingface-moon
+      x-request-id: Root=1-6a49227b-6e1c05b20e7415f1424f0754
+    body:
+      string: '{"_id":"62b07fc2baa2ce7b3ab338da","id":"scikit-learn/iris","author":"scikit-learn","sha":"0bda0ce801be0fa2f464ff845a9d5ceae99aad7d","lastModified":"2022-06-20T14:17:01.000Z","private":false,"gated":false,"disabled":false,"tags":["license:cc0-1.0","size_categories:n<1K","format:csv","modality:tabular","modality:text","library:datasets","library:pandas","library:mlcroissant","library:polars","region:us"],"description":"\n\t\n\t\t\n\t\n\t\n\t\tIris
+        Species Dataset\n\t\n\nThe Iris dataset was used in R.A. Fisher''s classic
+        1936 paper, The Use of Multiple Measurements in Taxonomic Problems, and can
+        also be found on the UCI Machine Learning Repository.\nIt includes three iris
+        species with 50 samples each as well as some properties about each flower.
+        One flower species is linearly separable from the other two, but the other
+        two are not linearly separable from each other.\nThe dataset is taken from
+        UCI Machine Learning Repository''s… See the full description on the dataset
+        page: https://huggingface.co/datasets/scikit-learn/iris.","downloads":13022,"likes":12,"cardData":{"license":"cc0-1.0"},"siblings":[{"rfilename":".gitattributes"},{"rfilename":"Iris.csv"},{"rfilename":"README.md"},{"rfilename":"database.sqlite"}],"createdAt":"2022-06-20T14:10:10.000Z","usedStorage":5309549}'
+  recorded_at: 2026-07-04 15:10:51
+recorded_with: VCR-vcr/2.1.0

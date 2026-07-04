@@ -1,0 +1,31 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://huggingface.co/api/datasets/scikit-learn/nonexistentrepo/revision/main
+  response:
+    status: 401
+    headers:
+      content-type: application/json; charset=utf-8
+      content-length: '41'
+      date: Sat, 04 Jul 2026 15:10:52 GMT
+      etag: W/"29-dEMcHWfJi78ZR1aqzb1ELAhp3Us"
+      x-powered-by: huggingface-moon
+      x-request-id: Root=1-6a49227c-58bef423745fd0e02ebb10e5
+      ratelimit: '"api";r=495;t=295'
+      ratelimit-policy: '"fixed window";"api";q=500;w=300'
+      cross-origin-opener-policy: same-origin
+      referrer-policy: strict-origin-when-cross-origin
+      access-control-max-age: '86400'
+      access-control-allow-origin: https://huggingface.co
+      vary: Origin
+      access-control-expose-headers: X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      x-error-message: Invalid username or password.
+      www-authenticate: Bearer realm="Authentication required", charset="UTF-8"
+      x-cache: Error from cloudfront
+      via: 1.1 72f86fdfa3e076311483d5344a4e7478.cloudfront.net (CloudFront)
+      x-amz-cf-pop: DEL51-P7
+      x-amz-cf-id: SBIoV-P6a3Pv7sHZPDJtZ_VcIJtaaOx2kWKCOsSDuGo9CVjD3LlQ6w==
+    body:
+      string: '{"error":"Invalid username or password."}'
+  recorded_at: 2026-07-04 15:10:52
+recorded_with: VCR-vcr/2.1.0
