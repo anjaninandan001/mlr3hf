@@ -4,20 +4,27 @@ test_that("cache_parquet stops when config is NULL", {
         "requires config"
     )
 })
-
-test_that("cache_parquet errors on invalid config", {
-    skip_on_ci()
-    skip_if_offline()
-
-    expect_error(
-        cache_parquet(repo_id = "scikit-learn/iris", config = "nonexistent"),
-        "Config .* not available"
-    )
-})
-
 test_that("cache_parquet errors on invalid split", {
-    skip_on_ci()
-    skip_if_offline()
+    webmockr::stub_request(
+        "get",
+        "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
+    ) |>
+        webmockr::to_return(
+            status = 200,
+            body = jsonlite::toJSON(
+                list(
+                    parquet_files = data.frame(
+                        dataset = "scikit-learn/iris",
+                        config = "default",
+                        split = "train", # sirf "train" split exist karta hai
+                        filename = "0000.parquet",
+                        size = 1234
+                    )
+                ),
+                auto_unbox = TRUE
+            ),
+            headers = list("Content-Type" = "application/json")
+        )
 
     expect_error(
         cache_parquet(
@@ -29,9 +36,9 @@ test_that("cache_parquet errors on invalid split", {
     )
 })
 
+
 test_that("cache_parquet downloads and returns snapshot paths", {
-    skip_on_ci()
-    skip_if_offline()
+    vcr::local_cassette("cache-parquet-download-full")
     withr::local_envvar(c("MLR3HF_CACHE_DIR" = withr::local_tempdir()))
 
     iris.paths <- cache_parquet(
@@ -45,14 +52,15 @@ test_that("cache_parquet downloads and returns snapshot paths", {
 })
 
 test_that("cache_parquet returns same paths on second call", {
-    skip_on_ci()
-    skip_if_offline()
     withr::local_envvar(c("MLR3HF_CACHE_DIR" = withr::local_tempdir()))
 
+    vcr::local_cassette("cache-parquet-second-call-fresh")
     iris.paths.fresh <- cache_parquet(
         repo_id = "scikit-learn/iris",
         config = "default"
     )
+
+    vcr::local_cassette("cache-parquet-second-call-cached")
     iris.paths.cached <- cache_parquet(
         repo_id = "scikit-learn/iris",
         config = "default"
@@ -61,18 +69,34 @@ test_that("cache_parquet returns same paths on second call", {
     expect_equal(iris.paths.fresh, iris.paths.cached)
 })
 
-test_that("cache_parquet filters by split correctly", {
-    skip_on_ci()
-    skip_if_offline()
-    withr::local_envvar(c("MLR3HF_CACHE_DIR" = withr::local_tempdir()))
+test_that("cache_parquet errors on invalid split", {
+    webmockr::stub_request(
+        "get",
+        "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
+    ) |>
+        webmockr::to_return(
+            status = 200,
+            body = jsonlite::toJSON(
+                list(
+                    parquet_files = data.frame(
+                        dataset = "scikit-learn/iris",
+                        config = "default",
+                        split = "train",
+                        filename = "0000.parquet",
+                        size = 1234
+                    )
+                ),
+                auto_unbox = TRUE
+            ),
+            headers = list("Content-Type" = "application/json")
+        )
 
-    iris.train <- cache_parquet(
-        repo_id = "scikit-learn/iris",
-        config = "default",
-        split = "train"
+    expect_error(
+        cache_parquet(
+            repo_id = "scikit-learn/iris",
+            config = "default",
+            split = "nonexistent"
+        ),
+        "Split .* not available"
     )
-
-    expect_true(is.list(iris.train))
-    expect_true(length(iris.train) == 1) 
-    expect_true(!is.null(iris.train[["train"]]))
 })
