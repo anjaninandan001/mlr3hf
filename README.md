@@ -1,0 +1,39 @@
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml)
+<!-- badges: end -->
+
+# mlr3hf
+
+mlr3hf provides a simple interface to download datasets from the Hugging
+Face Hub and convert them into mlr3 Task objects.
+
+## Installation
+
+You can install the development version of mlr3hf from
+[GitHub](https://github.com/anjaninandan001/mlr3hf) with:
+
+``` r
+# install.packages("pak")
+pak::pak("anjaninandan001/mlr3hf")
+```
+
+## Example
+
+``` r
+#As of now you can run this to check function is working or not.
+devtools::load_all() #only development version as library is not yet available on CRAN
+# Download a parquet dataset
+dataset.parquet <- cache_parquet(repo_id="scikit-learn/iris", config="default")
+dataset.parquet
+# Download a canonical dataset
+dataset.canonical <- cache_hfhub(repo_id="scikit-learn/iris",file_name="Iris.csv")
+dataset.canonical
+```
+
+## Note
+
+> The package is currently under active development. Some features may
+> be experimental and outputs may change in future releases.
