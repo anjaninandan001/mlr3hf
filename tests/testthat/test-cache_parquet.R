@@ -16,7 +16,7 @@ test_that("cache_parquet errors on invalid split", {
                     parquet_files = data.frame(
                         dataset = "scikit-learn/iris",
                         config = "default",
-                        split = "train", # sirf "train" split exist karta hai
+                        split = "train", # only train split exists in scikit-learn/iris
                         filename = "0000.parquet",
                         size = 1234
                     )
@@ -69,34 +69,3 @@ test_that("cache_parquet returns same paths on second call", {
     expect_equal(iris.paths.fresh, iris.paths.cached)
 })
 
-test_that("cache_parquet errors on invalid split", {
-    webmockr::stub_request(
-        "get",
-        "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
-    ) |>
-        webmockr::to_return(
-            status = 200,
-            body = jsonlite::toJSON(
-                list(
-                    parquet_files = data.frame(
-                        dataset = "scikit-learn/iris",
-                        config = "default",
-                        split = "train",
-                        filename = "0000.parquet",
-                        size = 1234
-                    )
-                ),
-                auto_unbox = TRUE
-            ),
-            headers = list("Content-Type" = "application/json")
-        )
-
-    expect_error(
-        cache_parquet(
-            repo_id = "scikit-learn/iris",
-            config = "default",
-            split = "nonexistent"
-        ),
-        "Split .* not available"
-    )
-})
