@@ -5,6 +5,7 @@ test_that("cache_parquet stops when config is NULL", {
     )
 })
 test_that("cache_parquet errors on invalid split", {
+    testthat::local_reproducible_output() #handling ANSI code
     webmockr::stub_request(
         "get",
         "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
@@ -32,7 +33,7 @@ test_that("cache_parquet errors on invalid split", {
             config = "default",
             split = "nonexistent"
         ),
-        "Split .* not available"
+        "Split(s) not available: nonexistent. Available: train"
     )
 })
 
@@ -68,4 +69,3 @@ test_that("cache_parquet returns same paths on second call", {
 
     expect_equal(iris.paths.fresh, iris.paths.cached)
 })
-
