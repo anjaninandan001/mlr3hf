@@ -31,4 +31,6 @@ Imports:
     glue,
     cli
 Suggests:
+    webmockr,
+    vcr,
     testthat (>= 3.0.0)

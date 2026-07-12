@@ -43,10 +43,11 @@ test_that("hub_url uses custom revision", {
 
 # get_file_metadata tests
 test_that("get_file_metadata returns expected fields", {
-    skip_on_ci()
-    skip_if_offline()
+    vcr::local_cassette("get-file-metadata-iris-csv")
+
     url <- "https://huggingface.co/datasets/scikit-learn/iris/resolve/main/Iris.csv"
     metadata <- get_file_metadata(url)
+
     expect_true(is.list(metadata))
     expect_true(all(
         c(
@@ -63,18 +64,20 @@ test_that("get_file_metadata returns expected fields", {
 })
 
 test_that("get_file_metadata returns 404 for nonexistent file", {
-    skip_on_ci()
-    skip_if_offline()
+    vcr::local_cassette("get-file-metadata-nonexistent")
+
     url <- "https://huggingface.co/datasets/scikit-learn/iris/resolve/main/nonexistent.csv"
     metadata <- get_file_metadata(url)
+
     expect_equal(metadata$status_code, 404)
 })
 
 test_that("get_file_metadata normalizes etag", {
-    skip_on_ci()
-    skip_if_offline()
+    vcr::local_cassette("get-file-metadata-iris-csv")
+
     url <- "https://huggingface.co/datasets/scikit-learn/iris/resolve/main/Iris.csv"
     metadata <- get_file_metadata(url)
+
     expect_false(grepl('"', metadata$etag))
     expect_false(grepl("W/", metadata$etag))
 })

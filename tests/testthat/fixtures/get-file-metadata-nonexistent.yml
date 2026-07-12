@@ -1,0 +1,34 @@
+http_interactions:
+- request:
+    method: HEAD
+    uri: https://huggingface.co/datasets/scikit-learn/iris/resolve/main/nonexistent.csv
+  response:
+    status: 404
+    headers:
+      content-type: text/plain; charset=utf-8
+      content-length: '15'
+      date: Sat, 04 Jul 2026 14:52:13 GMT
+      etag: W/"f-mY2VvLxuxB7KhsoOdQTlMTccuAQ"
+      x-powered-by: huggingface-moon
+      x-request-id: Root=1-6a491e1d-4f4d359455e468e34d33be6a
+      ratelimit: '"resolvers";r=2994;t=214'
+      ratelimit-policy: '"fixed window";"resolvers";q=3000;w=300'
+      cross-origin-opener-policy: same-origin
+      referrer-policy: strict-origin-when-cross-origin
+      access-control-max-age: '86400'
+      access-control-allow-origin: https://huggingface.co
+      vary: Origin
+      access-control-expose-headers: X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      x-repo-commit: 0bda0ce801be0fa2f464ff845a9d5ceae99aad7d
+      accept-ranges: bytes
+      x-hub-cache: MISS
+      x-error-code: EntryNotFound
+      x-error-message: Entry not found
+      x-cache: Error from cloudfront
+      via: 1.1 71b013ab8e02c41f07b2c5ecfa7190de.cloudfront.net (CloudFront)
+      x-amz-cf-pop: DEL51-P7
+      x-amz-cf-id: 9Rj2Y6E3qy4CjNWwzwYTQb7g2LcDkh8XhEYf0tDkjJYUW5OTr7z8zw==
+    body:
+      string: ''
+  recorded_at: 2026-07-04 14:52:12
+recorded_with: VCR-vcr/2.1.0
