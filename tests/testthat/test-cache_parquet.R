@@ -33,7 +33,7 @@ test_that("cache_parquet errors on invalid split", {
             config = "default",
             split = "nonexistent"
         ),
-        "Split(s) not available: nonexistent. Available: train"
+        "Splits not available: nonexistent. Available: train"
     )
 })
 
