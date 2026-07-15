@@ -5,6 +5,8 @@ test_that("cache_parquet stops when config is NULL", {
     )
 })
 test_that("cache_parquet errors on invalid split", {
+    webmockr::enable()
+    withr::defer(webmockr::stub_registry_clear())
     webmockr::stub_request(
         "get",
         "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
@@ -68,4 +70,3 @@ test_that("cache_parquet returns same paths on second call", {
 
     expect_equal(iris.paths.fresh, iris.paths.cached)
 })
-
