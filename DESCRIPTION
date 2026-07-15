@@ -23,6 +23,10 @@ Config/Needs/website: pkgdown
 Imports:
     httr,
     jsonlite,
+    data.table,
+    mlr3,
+    arrow,
+    nanoparquet,
     fs,
     filelock,
     rappdirs,
