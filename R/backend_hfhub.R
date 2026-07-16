@@ -10,7 +10,7 @@ backend_hfhub <- function(path, primary_key = NULL, ...) {
     data <- switch(
         ext,
         "csv" = utils::read.csv(path, stringsAsFactors = FALSE),
-        "parquet" = arrow::read_parquet(path),
+        "parquet" = nanoparquet::read_parquet(path),
         "tsv" = utils::read.csv(path, sep = "\t", stringsAsFactors = FALSE),
         cli::cli_abort("currently not supporting for your given format: {ext}")
     )
