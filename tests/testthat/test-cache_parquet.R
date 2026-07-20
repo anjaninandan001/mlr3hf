@@ -5,8 +5,7 @@ test_that("cache_parquet stops when config is NULL", {
     )
 })
 test_that("cache_parquet errors on invalid split", {
-    webmockr::enable()
-    withr::defer(webmockr::stub_registry_clear())
+    testthat::local_reproducible_output() #handling ANSI code
     webmockr::stub_request(
         "get",
         "https://datasets-server.huggingface.co/parquet?dataset=scikit-learn/iris"
@@ -34,7 +33,7 @@ test_that("cache_parquet errors on invalid split", {
             config = "default",
             split = "nonexistent"
         ),
-        "Split .* not available"
+        "Splits not available: nonexistent. Available: train"
     )
 })
 

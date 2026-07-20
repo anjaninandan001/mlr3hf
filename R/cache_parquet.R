@@ -97,11 +97,12 @@ cache_parquet <- function(
     }
 
     if (!is.null(split)) {
-        filtered_files <- filtered_files[filtered_files$split == split, ]
+        filtered_files <- filtered_files[filtered_files$split %in% split, ]
 
-        if (nrow(filtered_files) == 0) {
+        missing <- setdiff(split, unique(filtered_files$split))
+        if (length(missing) > 0) {
             cli::cli_abort(
-                "Split '{split}' not available: {paste(unique(parquet_files$split), collapse=', ')}"
+                "Splits not available: {paste(missing, collapse=', ')}. Available: {paste(unique(parquet_files$split), collapse=', ')}"
             )
         }
     }
