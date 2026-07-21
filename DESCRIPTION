@@ -26,20 +26,24 @@ Imports:
     data.table,
     nanoparquet,
     fs,
-    data.table,
-    checkmate,
+    R6,
+    mlr3,
+    mlr3misc,
     filelock,
     rappdirs,
+    checkmate,
     curl,
     glue,
     cli
 Suggests:
     webmockr,
     vcr,
+    rmarkdown,
+    knitr,
     testthat (>= 3.0.0),
-    mlr3,
     arrow,
     withr,
     mlr3pipelines,
     mlr3learners,
     rpart
+VignetteBuilder: knitr
