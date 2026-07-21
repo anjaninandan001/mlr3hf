@@ -24,6 +24,8 @@ Imports:
     httr,
     jsonlite,
     fs,
+    data.table,
+    checkmate,
     filelock,
     rappdirs,
     withr,

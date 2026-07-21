@@ -3,3 +3,8 @@
 export(cache_hfhub)
 export(cache_parquet)
 export(download_desc)
+export(list_datasets)
+importFrom(checkmate,assertCharacter)
+importFrom(checkmate,assertInt)
+importFrom(data.table,as.data.table)
+importFrom(data.table,rbindlist)
