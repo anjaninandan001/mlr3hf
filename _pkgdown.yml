@@ -12,7 +12,7 @@ toc:
 
 navbar:
   structure:
-    left:  [reference, book]
+    left:  [reference,articles, book]
     right: [search, github]
   components:
     home: ~
@@ -20,7 +20,16 @@ navbar:
       icon: fa fa-file-alt
       text: Reference
       href: reference/index.html
+    articles:
+      icon: fa fa-newspaper
+      text: Articles
+      href: articles/index.html
+    github:
+      icon: fa fa-github
+      text: GitHub
+      href: https://www.github.com/anjaninandan001/mlr3hf
     book:
       text: mlr3book
       icon: fa fa-link
       href: https://mlr3book.mlr-org.com
+      
