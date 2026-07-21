@@ -23,16 +23,23 @@ Config/Needs/website: pkgdown
 Imports:
     httr,
     jsonlite,
+    data.table,
+    nanoparquet,
     fs,
     data.table,
     checkmate,
     filelock,
     rappdirs,
-    withr,
     curl,
     glue,
     cli
 Suggests:
     webmockr,
     vcr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    mlr3,
+    arrow,
+    withr,
+    mlr3pipelines,
+    mlr3learners,
+    rpart
