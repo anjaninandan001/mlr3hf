@@ -9,10 +9,13 @@ This document describes the design and implementation of the Hugging Face Hub ca
 Unlike `cache_parquet()`, which downloads the auto-converted Parquet branch of a dataset, `cache_hfhub()` downloads a specific file from the **canonical (author-published) version** of a repository, at a given branch, tag, or commit.
 
 ---
+## Key Terms
+* **ETag:** An ETag (Entity Tag) is a unique identifier, or "fingerprint," assigned to a file. It changes whenever the contents of that specific file are modified, making it useful for detecting file updates and validating cached copies.
+* **Commit Hash:** A commit hash is a unique alphanumeric identifier for a specific revision of a repository. It changes whenever any file in the dataset repository is modified, added, or removed. Unlike an ETag, which is specific to an individual file, a commit hash represents the state of the entire repository at a particular point in time.
 
 ## Design
 
-The caching mechanism is built around the following design:
+The caching mechanism follows given below design:
 
 * **Blobs** store the physical contents of downloaded files.
 * **Snapshots** represent a specific repository revision, identified by its commit hash.
@@ -20,10 +23,10 @@ The caching mechanism is built around the following design:
 
 A user requests a file by providing:
 
-* `repo_id`
-* `file_name`
-* optionally, `revision` (a branch name, tag, or commit hash; defaults to `main`)
-* `local_files_only` (defaults to `FALSE`)
+* `repo_id` this is the argument or parameter user need to specify the repo_id eg. `scikit-learn/iris` or `ibm-research/duorc` etc.
+* `file_name` file_name it the specific any filename that is inside the repo it may be the /../../filename means where ever is the filename git path of the file with filename also . if it is at repo just not inside the folder then just `iris.csv` otherwise `foldername/file_name`
+* optionally, `revision` (a branch name, tag, or commit hash; defaults to `main`) here you can specify the branch where your file exist , here you also specify the commit_hash.
+* `local_files_only` (defaults to `FALSE`) this will helps the fetching already downloaded file no need to check with the get_file_metadata(etag and commit_hash). but if the dataset at huggingface is revised then when only get the download_files if local_files_only is true .  
 
 When downloading a file, it is first stored in the **blobs** directory using its **ETag** as the filename. The cache then calls `link_or_copy()` to create the corresponding file inside the appropriate **snapshot** directory. Depending on the value of `symlink_cache`, this operation either creates a symbolic link to the blob or copies the file.
 
@@ -64,6 +67,20 @@ Although the commit hash changes whenever the repository revision changes, the f
 
 ---
 
+## URL used 
+
+The following URL is used to download a file from the Hugging Face Hub:
+```text
+https://huggingface.co/datasets/<repo_id>/resolve/<revision>/<file_name>
+```
+
+The function `get_file_metadata(url)` uses the same URL to retrieve the file metadata (such as the **commit hash** and **ETag**) by sending an HTTP HEAD request. The HEAD request does not download the file itself; it only retrieves the response headers containing the metadata. The actual file is downloaded later using a separate download request (HTTP GET) if it is not already present in the local cache.
+
+The retrieved metadata is used to determine whether the requested file is already available in the local cache. If the corresponding blob exists, it is reused by creating the appropriate snapshot entry. Otherwise, the file is downloaded using an HTTP `GET` request and stored in the cache before being linked (or copied) into the snapshot directory.
+
+---
+
+
 ## Download Flow
 
 1. The user provides `repo_id`, `file_name`, and optionally `revision` / `local_files_only`.
@@ -74,11 +91,46 @@ Although the commit hash changes whenever the repository revision changes, the f
    * otherwise, look up the corresponding commit hash in `refs/<revision>`.
    * If a matching snapshot is found this way, its path is returned immediately.
    * If not found, the function aborts with an error telling the user to enable network access.
+**Note:** When local_files_only = TRUE, the dataset is loaded exclusively from the local cache. No request is made to check for updates on the Hugging Face Hub, so any newer version available in the remote repository is ignored. As a result, the locally cached version is used even if the repository has been updated.  
 5. With a resolved commit hash and ETag (from step 3), the function computes `blob_path` and `snapshot_path`, creating any missing cache directories.
 6. If `revision` was a branch/tag (not already the commit hash itself), `refs/<revision>` is (re)written with the resolved commit hash.
 7. If the snapshot already exists, its path is returned.
 8. Otherwise, if a blob with the same ETag already exists, it's linked/copied into the snapshot directory and returned.
 9. Otherwise, the file is downloaded via `download_file()`, stored in `blobs/` under its ETag, then linked/copied into the snapshot directory.
 10. The path to the file inside the snapshot directory is returned to the caller.
+
+---
+
+## link_or_copy
+This function creates the relationship between the blob and the snapshot. If the operating system supports symbolic links, it creates a symlink from the snapshot to the corresponding blob. Otherwise, it copies the file into the snapshot directory. This ensures compatibility across platforms while avoiding unnecessary duplication when symlinks are available.
+```r
+
+    if (fs::file_exists(blob_path)) {
+        link_or_copy(blob_path, snapshot_path, owned = FALSE, storage_folder)
+        return(snapshot_path)
+    }
+    download_file(
+        url,
+        blob_path,
+        file_name,
+        expected_size,
+        max_retries = mlr3hf_retries()
+    )
+    link_or_copy(blob_path, snapshot_path, owned = TRUE, storage_folder)
+
+    return(snapshot_path)
+```
+
+---
+
+## References
+
+For a reference implementation of this caching approach, see the **hfhub** package:
+
+- [hfhub: `hub_download.R`](https://github.com/mlverse/hfhub/blob/master/R/hub_download.R)
+
+For more details on the Hugging Face Hub cache structure and design, see the official documentation:
+
+- [Hugging Face Hub – Manage Cache](https://huggingface.co/docs/huggingface_hub/v0.22.2/guides/manage-cache)
 
 ---
