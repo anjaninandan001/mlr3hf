@@ -23,10 +23,13 @@ The caching mechanism follows given below design:
 
 A user requests a file by providing:
 
-* `repo_id` this is the argument or parameter user need to specify the repo_id eg. `scikit-learn/iris` or `ibm-research/duorc` etc.
-* `file_name` file_name it the specific any filename that is inside the repo it may be the /../../filename means where ever is the filename git path of the file with filename also . if it is at repo just not inside the folder then just `iris.csv` otherwise `foldername/file_name`
-* optionally, `revision` (a branch name, tag, or commit hash; defaults to `main`) here you can specify the branch where your file exist , here you also specify the commit_hash.
-* `local_files_only` (defaults to `FALSE`) this will helps the fetching already downloaded file no need to check with the get_file_metadata(etag and commit_hash). but if the dataset at huggingface is revised then when only get the download_files if local_files_only is true .  
+- **`repo_id`**: The Hugging Face dataset repository ID. This is a required argument and should be specified in the format `owner/dataset`, for example, `scikit-learn/iris` or `ibm-research/duorc`.
+
+- **`file_name`**: The path to a specific file within the dataset repository. If the file is located in the repository root, specify only the filename (e.g., `iris.csv`). If it is inside one or more directories, provide the relative path from the repository root, for example, `data/train.csv` or `folder/subfolder/file.csv`.
+
+- **`revision`** *(optional, defaults to `"main"`)*: The repository revision from which the file should be fetched. This can be a branch name, a tag, or a commit hash. Use this argument if the desired file exists in a revision other than the default `main` branch.
+
+- **`local_files_only`** *(optional, defaults to `FALSE`)*: If set to `TRUE`, the function uses only the locally cached file and does not contact the Hugging Face Hub to check whether a newer version is available (i.e., it skips metadata checks such as the ETag and commit hash). This avoids unnecessary network requests but means that updates to the dataset on Hugging Face will not be detected until `local_files_only = FALSE` is used.
 
 When downloading a file, it is first stored in the **blobs** directory using its **ETag** as the filename. The cache then calls `link_or_copy()` to create the corresponding file inside the appropriate **snapshot** directory. Depending on the value of `symlink_cache`, this operation either creates a symbolic link to the blob or copies the file.
 
