@@ -25,14 +25,6 @@ controls whether nested R6 fields are also cloned). It is not
 re-documented here since it isn't defined in this class's source, but
 behaves exactly as described in \link[R6:R6Class]{R6::R6Class}.
 }
-\examples{
-\dontrun{
-hf <- HFData$new("user/dataset", config = "default", target = "label")
-hf$nrow
-hf$colnames
-task <- as_task(hf)
-}
-}
 \section{Active bindings}{
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
@@ -42,9 +34,9 @@ task <- as_task(hf)
 
 \item{\code{file_name}}{(\code{character(1)} | \code{NULL})\cr The specific file name within the repository, if specified. Read-only.}
 
-\item{\code{split}}{(\code{character(1)} | \code{NULL})\cr The dataset split (e.g. \code{"train"}, \code{"test"}), if specified. Read-only.}
+\item{\code{split}}{(\code{character()} | \code{NULL})\cr The dataset split (e.g. \code{"train"}, \code{"test"}), if specified. Read-only.}
 
-\item{\code{target}}{(\code{character(1)} | \code{NULL})\cr The name of the target column. Read-only.}
+\item{\code{target}}{(\code{character()} | \code{NULL})\cr The name of the target column. Read-only.}
 
 \item{\code{desc}}{(\code{list()})\cr The repository description/metadata, downloaded from the Hub on first access. Read-only.}
 
@@ -68,7 +60,7 @@ task <- as_task(hf)
 
 \item{\code{coltypes}}{(\code{character()})\cr Named vector of the (first) class of each column. Read-only.}
 
-\item{\code{task_type}}{(\code{character(1)})\cr One of \code{"auto"}, \code{"classif"}, or \code{"regr"}. Read-only.}
+\item{\code{task_type}}{(\code{character()})\cr One of \code{"auto"}, \code{"classif"}, or \code{"regr"}. Read-only.}
 
 \item{\code{feature_names}}{(\code{character()})\cr Column names excluding the target column. Read-only.}
 }
@@ -105,15 +97,15 @@ Create a new \code{HFData} object.
 \describe{
 \item{\code{repo_id}}{(\code{character(1)}) Repository id on the Hugging Face Hub.}
 
-\item{\code{config}}{(\code{character(1)}) Dataset configuration name.}
+\item{\code{config}}{(\code{character(1)}) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{file_name}}{(\code{character(1)}) Specific file name within the repository.}
+\item{\code{file_name}}{(\code{character(1)}) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{split}}{(\code{character(1)}) Dataset split to load.}
+\item{\code{split}}{(\code{character()}) Dataset split to load. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{target}}{(\code{character(1)}) Name of the target column.}
+\item{\code{target}}{(\code{character()}) Name of the target column. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{primary_key}}{(\code{character(1)}) Name of the primary key column.}
+\item{\code{primary_key}}{(\code{character(1)}) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.}
 
 \item{\code{task_type}}{(\code{character(1)}) One of \code{"auto"}, \code{"classif"}, \code{"regr"}.}
 
