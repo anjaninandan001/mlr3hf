@@ -1,7 +1,3 @@
-#' @import mlr3misc
-#' @importFrom checkmate assertCharacter assertInt
-#' @import R6
-NULL
 #' @title Hugging Face Dataset Wrapper
 #'
 #' @description
@@ -26,27 +22,19 @@ NULL
 #' re-documented here since it isn't defined in this class's source, but
 #' behaves exactly as described in [R6::R6Class].
 #'
-#' @importFrom R6 R6Class
 #' @export
 #'
-#' @examples
-#' \dontrun{
-#' hf <- HFData$new("user/dataset", config = "default", target = "label")
-#' hf$nrow
-#' hf$colnames
-#' task <- as_task(hf)
-#' }
 HFData <- R6Class(
     "HFData",
     public = list(
         #' @description
         #' Create a new `HFData` object.
         #' @param repo_id (`character(1)`) Repository id on the Hugging Face Hub.
-        #' @param config (`character(1)`) Dataset configuration name.
-        #' @param file_name (`character(1)`) Specific file name within the repository.
-        #' @param split (`character()`) Dataset split to load.
-        #' @param target (`character()`) Name of the target column.
-        #' @param primary_key (`character(1)`) Name of the primary key column.
+        #' @param config (`character(1)`) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.
+        #' @param file_name (`character(1)`) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.
+        #' @param split (`character()`) Dataset split to load. Defaults to NULL, meaning no configuration is selected.
+        #' @param target (`character()`) Name of the target column. Defaults to NULL, meaning no configuration is selected.
+        #' @param primary_key (`character(1)`) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.
         #' @param task_type (`character(1)`) One of `"auto"`, `"classif"`, `"regr"`.
         #' @param ... Additional arguments, stored for later use.
         #' @return A new `HFData` object.
@@ -60,6 +48,12 @@ HFData <- R6Class(
             task_type = c("auto", "classif", "regr"),
             ...
         ) {
+            assert_string(repo_id)
+            assert_string(config, null.ok = TRUE)
+            assert_string(file_name, null.ok = TRUE)
+            assert_character(split, null.ok = TRUE)
+            assert_string(target, null.ok = TRUE)
+            assert_string(primary_key, null.ok = TRUE)
             private$.repo_id <- repo_id
             private$.config <- config
             private$.file_name <- file_name
@@ -76,7 +70,6 @@ HFData <- R6Class(
         #' @return `self`, invisibly (called for its side effect).
         print = function() {
             catf("<HFData:%s> (%ix%i)", self$repo_id, self$nrow, self$ncol)
-            catf(" * Target: %s", self$target)
             catf(
                 " * Storage: %s - This storage is for the whole repository, not for a single file or config",
                 self$storage
@@ -210,7 +203,7 @@ HFData <- R6Class(
                 ]
             })
         },
-        #' @field task_type (`character(1)`)\cr One of `"auto"`, `"classif"`, or `"regr"`. Read-only.
+        #' @field task_type (`character()`)\cr One of `"auto"`, `"classif"`, or `"regr"`. Read-only.
         task_type = function(rhs) {
             assert_ro_binding(rhs)
             private$.task_type
@@ -245,7 +238,7 @@ HFData <- R6Class(
             }
 
             if (is.null(private$.config) && is.null(private$.file_name)) {
-                stopf(paste0(
+                message(paste0(
                     "No dataset configuration or file was specified.\n",
                     "Specify either 'config' or 'file_name':\n",
                     "  config:    HFData$new(repo_id, config = 'default')\n",
@@ -286,10 +279,6 @@ HFData <- R6Class(
                 )
                 return(private$.backend)
             }
-            if (is.null(private$.backend)) {
-                stopf("Failed to create backend from dataset file.")
-            }
-            private$.backend <- backend
         }
     )
 )
@@ -307,13 +296,8 @@ HFData <- R6Class(
 #' @return An `mlr3` [DataBackend][mlr3::DataBackend].
 #'
 #' @exportS3Method mlr3::as_data_backend
-#' @importFrom mlr3 as_data_backend
 #'
-#' @examples
-#' \dontrun{
-#' hf <- HFData$new("user/dataset", config = "default")
-#' backend <- as_data_backend(hf)
-#' }
+
 as_data_backend.HFData <- function(data, ...) {
     get_private(data)$.get_backend()
 }
@@ -334,23 +318,14 @@ as_data_backend.HFData <- function(data, ...) {
 #' raised asking for an explicit `task_type`.
 #'
 #' @param x (`HFData`)\cr The `HFData` object to convert.
-#' @param target_names (`character(1)`)\cr Name of the target column. If `NULL`, the `target` stored in `x` is used. Multiple targets are not supported.
+#' @param target_names (`character()`)\cr Name of the target column. If `NULL`, the `target` stored in `x` is used. Multiple targets are not supported.
 #' @param task_type (`character(1)`)\cr One of `"auto"`, `"classif"`, or `"regr"`. Defaults to `"auto"`, in which case the type is inferred from the target column.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return An [mlr3::TaskClassif] or [mlr3::TaskRegr] object.
 #'
 #' @exportS3Method mlr3::as_task
-#' @importFrom mlr3 as_task TaskClassif TaskRegr
 #'
-#' @examples
-#' \dontrun{
-#' hf <- HFData$new("user/dataset", config = "default", target = "label")
-#' task <- as_task(hf)
-#'
-#' # Override the target and task type explicitly
-#' task2 <- as_task(hf, target_names = "label", task_type = "classif")
-#' }
 as_task.HFData <- function(
     x,
     target_names = NULL,
@@ -359,10 +334,6 @@ as_task.HFData <- function(
 ) {
     task_type <- match.arg(task_type)
     target <- if (!is.null(target_names)) target_names else x$target
-
-    if (is.null(target) || !length(target)) {
-        stopf("Target must be defined.")
-    }
 
     if (length(target) > 1L) {
         stopf(
