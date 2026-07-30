@@ -1,5 +1,5 @@
 ---
-title: "Tutorial"
+title: "Getting Started"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting Started}
@@ -35,61 +35,54 @@ Like other `mlr3` packages, `mlr3hf` provides both R6 constructors and convenien
 library(mlr3hf)
 library(mlr3)
 
-# Search for datasets on Hugging Face
-list.hf_data = list_datasets(
-  num_of_dataset = 5,
-  search = "machine learning"
-)
-
-# Load the Parquet representation of a dataset
-hf_data.parquet = HFData$new(
+hf_data_parquet = htsk(
   repo_id = "scikit-learn/iris",
   config = "default",
   target = "Species"
 )
 
-# Load a canonical dataset file
-hf_data.hfhub = HFData$new(
+hf_data_hfhub = htsk(
   repo_id = "scikit-learn/iris",
   file_name = "Iris.csv",
   target = "Species"
 )
 ```
 
+The arguments above are used as follows:
+
+* **repo_id**: The name of the repository on Hugging Face. It typically has the form `owner_name/repo_name`.
+* **config**: The name of the configuration (subset) available within the repository. This mainly refers to the `refs/convert/parquet` branch of the dataset, where configs can be found split into train, test, and validation sets.
+* **file_name**: The path/name of the file to retrieve directly from the dataset. If the file is located at the root of the repository (not inside a subfolder), just provide the filename. This downloads the canonical version of the dataset — i.e., whatever original file (CSV, TSV, Parquet, etc.) was uploaded to Hugging Face, without any compression or Parquet conversion.
+* **target**: The target feature to be predicted — i.e., the output/label column.
+* **primary_key**: If the dataset already contains a column that serves as a serial/ID number, it can be specified via `primary_key`. If left as `NULL` (the default), a new column named `mlr3_row_id` is generated and used as the row identifier instead. The primary key column remains part of the backend, but is automatically excluded from the task's feature columns (it is not used as a predictor).
+
 The complete dataset metadata can be accessed through the `$desc` field. Frequently used information such as the number of rows and columns is available directly.
 
 ```{r}
-
 # Dataset dimensions
 c(
-  n_rows = hf_data.parquet$nrow,
-  n_cols = hf_data.parquet$ncol
+  n_rows = hf_data_parquet$nrow,
+  n_cols = hf_data_parquet$ncol
 )
 ```
 
 The dataset itself can be accessed through the `$data` field.
 
 ```{r}
-hf_data.parquet$data[1:5, 1:3]
+hf_data_parquet$data[1:5, 1:3]
 ```
 
 The dataset can be converted to an `mlr3::DataBackend`.
 
 ```{r}
-backend = as_data_backend(hf_data.parquet)
+backend = as_data_backend(hf_data_parquet)
 backend
-```
-
-The prediction target can be inspected using the `$target` field.
-
-```{r}
-hf_data.parquet$target
 ```
 
 Since Hugging Face datasets do not define a prediction target, the target column must be specified when creating an `mlr3` task.
 
 ```{r}
-task = as_task(hf_data.parquet)
+task = as_task(hf_data_parquet)
 task
 ```
 
@@ -108,7 +101,7 @@ rr = resample(
 An `HFData` object can be converted directly into an `mlr3::Task`.
 
 ```{r}
-hf_data = HFData$new(
+hf_data = htsk(
   repo_id = "scikit-learn/iris",
   config = "default",
   target = "Species"
@@ -121,10 +114,9 @@ The underlying dataset can be accessed using:
 hf_data$data
 ```
 
-The target column and feature names are available through:
+The feature names are available through the following (this is only produced if a target is specified):
 
 ```{r}
-hf_data$target
 hf_data$feature_names
 ```
 
@@ -141,8 +133,81 @@ task = as_task(hf_data)
 task
 ```
 
-If predefined dataset splits are available, they can also be converted into an `mlr3` resampling object.
+If predefined dataset splits are available, the corresponding row IDs can be extracted and used to build a custom `mlr3` resampling object:
 
+```{r}
+train_row_id = hf_data$splits$train
+```
+Note that in this example, only the `train` split is shown, since the `scikit-learn/iris` dataset provides only a `train` split. To try this with a dataset that includes both `train` and `test` splits, you can use `ibm-research/duorc` with the config `ParaphraseRC`.
+
+```{text}
+resampling = rsmp("custom")
+resampling$instantiate(
+  task,
+  train_sets = list(train_row_id),
+  test_sets  = list(test_row_id)
+)
+
+resampling
+```
+
+This resampling object can then be used like any other `mlr3` resampling, for example when calling `resample()`:
+
+```{text}
+rr = resample(
+  task,
+  lrn("classif.rpart"),
+  resampling
+)
+
+rr$aggregate()
+```
+
+These row IDs can then be used to construct a resampling based on the predefined split.
+
+## Using `tsk()`
+
+In addition to `HFData` and the sugar function `htsk()`, `mlr3hf` also registers Hugging Face datasets as a `TaskGenerator`, so that they can be created directly using `mlr3`'s standard `tsk()` interface.
+
+```{r}
+task = tsk("hf", repo_id = "scikit-learn/iris", config = "default", target = "Species")
+task
+```
+
+This is equivalent to first constructing an `HFData` object and then converting it into a task:
+
+```{r}
+hf_data = htsk(
+  repo_id = "scikit-learn/iris",
+  config = "default",
+  target = "Species"
+)
+
+task = as_task(hf_data)
+```
+
+The `tsk("hf", ...)` interface accepts the same arguments as `HFData$new()` and `htsk()`, including `repo_id`, `config`, `file_name`, `target`, and `primary_key`. This makes it possible to load a Hugging Face dataset directly as an `mlr3` task in a single line, without needing to work with the underlying `HFData` object explicitly.
+
+```{r}
+task_canonical = tsk(
+  "hf",
+  repo_id = "scikit-learn/iris",
+  file_name = "Iris.csv",
+  target = "Species"
+)
+```
+
+Since `tsk("hf", ...)` is registered like any other task generator in `mlr3`, it integrates directly with the rest of the `mlr3` ecosystem — for example, it can be used immediately with `resample()`, `benchmark()`, or any learner without additional conversion steps.
+
+```{r}
+rr = resample(
+  task,
+  lrn("classif.rpart"),
+  rsmp("holdout")
+)
+
+rr$aggregate()
+```
 
 ## Listing Datasets {#sec-listing}
 
@@ -158,12 +223,12 @@ The main arguments are:
 * `author`: Filter datasets by author.
 
 ```{r}
-list.hf_data = list_datasets(
+list_hf_data = list_datasets(
   num_of_dataset = 5,
   search = "machine learning"
 )
 
-list.hf_data
+list_hf_data
 ```
 
 ## API Authentication
@@ -193,9 +258,8 @@ Sys.setenv(HUGGING_FACE_HUB_TOKEN = "your_api_token")
 Downloaded datasets are automatically cached on the local machine to avoid repeated downloads.
 
 By default, the cache directory is:
-
-```
-~/.cache/huggingface
+```{text}
+~/.cache/huggingface/
 ```
 
 A different cache location can be specified using:
@@ -214,6 +278,6 @@ options(
 
 * **Canonical dataset files**, such as CSV, TSV, or other files stored directly in a dataset repository.
 
-Depending on the input, `mlr3hf` automatically selects the appropriate loading strategy.
+Depending on the arguments supplied, `mlr3hf` automatically selects the appropriate loading strategy: if `repo_id`, `config`, and `target` are specified, the Parquet dataset is downloaded; if `repo_id`, `file_name`, and `target` are specified, the canonical (original) dataset file is downloaded instead.
 
 For more information on data backends, see the corresponding [section](https://mlr3book.mlr-org.com/chapters/chapter10/advanced_technical_aspects_of_mlr3.html#sec-backends) in the `mlr3book`.
