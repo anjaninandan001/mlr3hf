@@ -19,9 +19,3 @@ Converts an \link{HFData} object into an \code{mlr3} \link[mlr3:DataBackend]{Dat
 triggering download and parsing of the underlying dataset if this has not
 already happened.
 }
-\examples{
-\dontrun{
-hf <- HFData$new("user/dataset", config = "default")
-backend <- as_data_backend(hf)
-}
-}

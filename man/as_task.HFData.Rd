@@ -9,7 +9,7 @@
 \arguments{
 \item{x}{(\code{HFData})\cr The \code{HFData} object to convert.}
 
-\item{target_names}{(\code{character(1)})\cr Name of the target column. If \code{NULL}, the \code{target} stored in \code{x} is used. Multiple targets are not supported.}
+\item{target_names}{(\code{character()})\cr Name of the target column. If \code{NULL}, the \code{target} stored in \code{x} is used. Multiple targets are not supported.}
 
 \item{task_type}{(\code{character(1)})\cr One of \code{"auto"}, \code{"classif"}, or \code{"regr"}. Defaults to \code{"auto"}, in which case the type is inferred from the target column.}
 
@@ -30,13 +30,4 @@ tasks, numeric and integer columns become regression tasks, and
 character columns become classification tasks only if they have at most
 50 unique values or a unique-value ratio below 10\%; otherwise an error is
 raised asking for an explicit \code{task_type}.
-}
-\examples{
-\dontrun{
-hf <- HFData$new("user/dataset", config = "default", target = "label")
-task <- as_task(hf)
-
-# Override the target and task type explicitly
-task2 <- as_task(hf, target_names = "label", task_type = "classif")
-}
 }
