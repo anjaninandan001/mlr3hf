@@ -1,0 +1,98 @@
+---
+title: "Quick revision"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Quick revision}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+library(mlr3hf)
+```
+
+# Quick Revision
+
+This vignette provides a quick overview of how to use **mlr3hf**.
+
+Suppose you are working on **neuromorphic computing** and need a dataset for your machine learning project.
+
+First, search for relevant datasets on the Hugging Face Hub.
+
+```{r}
+library(mlr3hf)
+library(mlr3)
+list_datasets(search = "neuromorphic computing")
+```
+
+This returns a list of dataset repositories matching your search.
+
+Next, create an `HFData` object. At this stage you can inspect the repository before downloading any data.
+
+```{r}
+dt <- htsk(repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry")
+```
+
+If you want to open the dataset repository in your browser, use:
+
+```{r}
+dt$openlink
+```
+
+You can also inspect the available dataset configurations and files.
+
+```{r}
+dt$configs
+dt$siblings
+```
+
+Once you know which configuration you want, create the object by specifying the configuration.
+
+```{r}
+dt <- htsk(
+  repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
+  config = "default"
+)
+```
+
+The dataset is downloaded locally, a backend is created, and you can inspect the dataset.
+
+To view the column names or load the data:
+
+```{r}
+dt$colnames
+dt$data[1:5]
+```
+
+You can now perform exploratory data analysis (EDA) using any R package of your choice.
+
+To create an **mlr3** task, specify the target column.
+
+```{r}
+task <- as_task(
+  dt,
+  target_names = "temperature_c"
+)
+```
+
+If you already know the repository, configuration, and target column, you can create everything directly.
+
+```{r}
+dt <- htsk(
+  repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
+  config = "default",
+  target = "temperature_c"
+)
+
+task <- as_task(dt)
+task
+```
+
+This concludes a quick revision of the basic **mlr3hf** workflow:
+
+1. Search for datasets.
+2. Inspect the repository.
+3. Choose a configuration or file.
+4. Download the dataset and create a backend.
+5. Explore the data.
+6. Create an **mlr3** task.
