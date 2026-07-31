@@ -67,7 +67,7 @@ Although the commit hash changes whenever the dataset revision changes, individu
                     ├── blobs/
                     └── snapshots/
 ```
-
+**Note:** The `train`, `test`, and `validation` folders may not all be present for every dataset. Some datasets provide only a `train` split, in which case no `test` or `validation` directories are created. Others may include only `train` and `test`, while some provide all three splits.
 
 ### Directory responsibilities
 
