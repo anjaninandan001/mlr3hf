@@ -125,3 +125,15 @@ test_that("link_or_copy owned=FALSE copies file and keeps original", {
     expect_true(file.exists(result))
     expect_true(file.exists(blob_path))
 })
+
+#bug fixed #29
+test_that("hub_url URL-encodes spaces in file_name", {
+    repo_id <- "mlr3hf"
+    file_name <- "mlr hf"
+
+    result <- hub_url(repo_id, file_name)
+    expect_equal(
+        result,
+        "https://huggingface.co/datasets/mlr3hf/resolve/main/mlr%20hf"
+    )
+})

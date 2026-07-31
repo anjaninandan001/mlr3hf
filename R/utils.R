@@ -10,6 +10,10 @@ hub_url <- function(
   repo_type = "dataset"
 ) {
   base <- mlr3hf_hub_url()
+  # Replace spaces with %20 
+  repo_id  <- gsub(" ", "%20", repo_id, fixed = TRUE)
+  filename <- gsub(" ", "%20", filename, fixed = TRUE)
+
   glue::glue("{base}/{repo_type}s/{repo_id}/resolve/{revision}/{filename}")
 }
 #' In hugginface some dataset are private some are gated for all this function authorize the user to use the dataset
