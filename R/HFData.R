@@ -30,12 +30,12 @@ HFData <- R6Class(
         #' @description
         #' Create a new `HFData` object.
         #' @param repo_id (`character(1)`) Repository id on the Hugging Face Hub.
-        #' @param config (`character(1)`) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.
-        #' @param file_name (`character(1)`) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.
-        #' @param split (`character()`) Dataset split to load. Defaults to NULL, meaning no configuration is selected.
+        #' @param config (`character(1)`|`NULL`) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.
+        #' @param file_name (`character(1)`|`NULL`) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.
+        #' @param split (`character()`|`NULL`) Dataset split to load. Defaults to NULL, meaning no configuration is selected.
         #' @param target (`character()`) Name of the target column. Defaults to NULL, meaning no configuration is selected.
-        #' @param primary_key (`character(1)`) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.
-        #' @param task_type (`character(1)`) One of `"auto"`, `"classif"`, `"regr"`.
+        #' @param primary_key (`character(1)`|`NULL`) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.
+        #' @param task_type (`character(1)`|`NULL`) One of `"auto"`, `"classif"`, `"regr"`.
         #' @param ... Additional arguments, stored for later use.
         #' @return A new `HFData` object.
         initialize = function(
@@ -159,8 +159,8 @@ HFData <- R6Class(
             }
             private$.siblings
         },
-        #' @field openlink (`character(1)`)\cr URL to the dataset page on the Hugging Face Hub. Read-only.
-        openlink = function(rhs) {
+        #' @field repo_link (`character(1)`)\cr URL to the dataset page on the Hugging Face Hub. Read-only.
+        repo_link = function(rhs) {
             assert_ro_binding(rhs)
             sprintf("https://huggingface.co/datasets/%s", self$repo_id)
         },
@@ -238,7 +238,7 @@ HFData <- R6Class(
             }
 
             if (is.null(private$.config) && is.null(private$.file_name)) {
-                message(paste0(
+                message(
                     "No dataset configuration or file was specified.\n",
                     "Specify either 'config' or 'file_name':\n",
                     "  config:    HFData$new(repo_id, config = 'default')\n",
@@ -246,7 +246,7 @@ HFData <- R6Class(
                     "To inspect available options:\n",
                     "  HFData$new(repo_id)$configs\n",
                     "  HFData$new(repo_id)$siblings"
-                ))
+                )
             }
 
             if (!is.null(private$.config) && !is.null(private$.file_name)) {
