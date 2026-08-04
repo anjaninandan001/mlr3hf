@@ -52,7 +52,7 @@ behaves exactly as described in \link[R6:R6Class]{R6::R6Class}.
 
 \item{\code{siblings}}{(\code{character()})\cr File names of all sibling files in the repository. Read-only.}
 
-\item{\code{openlink}}{(\code{character(1)})\cr URL to the dataset page on the Hugging Face Hub. Read-only.}
+\item{\code{repo_link}}{(\code{character(1)})\cr URL to the dataset page on the Hugging Face Hub. Read-only.}
 
 \item{\code{configs}}{(\code{character()})\cr Available dataset configurations, queried from the datasets-server API. Read-only.}
 
@@ -97,17 +97,17 @@ Create a new \code{HFData} object.
 \describe{
 \item{\code{repo_id}}{(\code{character(1)}) Repository id on the Hugging Face Hub.}
 
-\item{\code{config}}{(\code{character(1)}) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.}
+\item{\code{config}}{(\code{character(1)}|\code{NULL}) Dataset configuration name. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{file_name}}{(\code{character(1)}) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.}
+\item{\code{file_name}}{(\code{character(1)}|\code{NULL}) Specific file name within the repository. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{split}}{(\code{character()}) Dataset split to load. Defaults to NULL, meaning no configuration is selected.}
+\item{\code{split}}{(\code{character()}|\code{NULL}) Dataset split to load. Defaults to NULL, meaning no configuration is selected.}
 
 \item{\code{target}}{(\code{character()}) Name of the target column. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{primary_key}}{(\code{character(1)}) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.}
+\item{\code{primary_key}}{(\code{character(1)}|\code{NULL}) Name of the primary key column. Defaults to NULL, meaning no configuration is selected.}
 
-\item{\code{task_type}}{(\code{character(1)}) One of \code{"auto"}, \code{"classif"}, \code{"regr"}.}
+\item{\code{task_type}}{(\code{character(1)}|\code{NULL}) One of \code{"auto"}, \code{"classif"}, \code{"regr"}.}
 
 \item{\code{...}}{Additional arguments, stored for later use.}
 }
