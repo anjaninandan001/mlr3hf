@@ -1,8 +1,8 @@
 ---
-title: "Quick revision"
+title: "Quick Revision"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Quick revision}
+  %\VignetteIndexEntry{Quick Revision}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -17,45 +17,53 @@ This vignette provides a quick overview of how to use **mlr3hf**.
 
 Suppose you are working on **neuromorphic computing** and need a dataset for your machine learning project.
 
+### Step 1: Search for a Dataset
+
 First, search for relevant datasets on the Hugging Face Hub.
 
 ```{r}
 library(mlr3hf)
 library(mlr3)
-list_datasets(search = "neuromorphic computing")
+
+list_datasets(num_of_datasets = 5, search = "neuromorphic computing")
 ```
 
-This returns a list of dataset repositories matching your search.
+This returns a list of dataset repositories matching your search term.
+**Note:** If search dataset can return less that the number of datasets specified in `num_of_datasets`, it means that there are no more datasets available for the search term.
 
-Next, create an `HFData` object. At this stage you can inspect the repository before downloading any data.
+### Step 2: Create an `HFData` Object
+
+Next, create an `HFData` object using a `repo_id` obtained from `list_datasets()` above.
 
 ```{r}
-dt <- htsk(repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry")
+dt = hfdt(repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry")
 ```
 
-If you want to open the dataset repository in your browser, use:
+To retrieve the link to the repository on Hugging Face:
 
 ```{r}
-dt$openlink
+dt$repo_link
 ```
 
-You can also inspect the available dataset configurations and files.
+You can also inspect the available dataset configurations and files:
 
 ```{r}
 dt$configs
 dt$siblings
 ```
 
-Once you know which configuration you want, create the object by specifying the configuration.
+### Step 3: Select a Configuration
+
+Once you know which configuration you want, recreate the object by specifying it. Here, the configuration is one of the values returned by `dt$configs` above.
 
 ```{r}
-dt <- htsk(
+dt = hfdt(
   repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
   config = "default"
 )
 ```
 
-The dataset is downloaded locally, a backend is created, and you can inspect the dataset.
+The dataset is downloaded locally, a backend is created, and the dataset can now be inspected.
 
 To view the column names or load the data:
 
@@ -64,35 +72,41 @@ dt$colnames
 dt$data[1:5]
 ```
 
-You can now perform exploratory data analysis (EDA) using any R package of your choice.
+### Step 4: Create an `mlr3` Task
 
-To create an **mlr3** task, specify the target column.
+To create an `mlr3` task, specify a target column — one of the values returned by `dt$colnames` above.
 
 ```{r}
-task <- as_task(
+task = as_task(
   dt,
   target_names = "temperature_c"
 )
 ```
 
-If you already know the repository, configuration, and target column, you can create everything directly.
+### Shortcut: Specify Everything at Once
+
+If you already know the repository, configuration, and target column, you can create everything directly:
 
 ```{r}
-dt <- htsk(
+dt = hfdt(
   repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
   config = "default",
   target = "temperature_c"
 )
 
-task <- as_task(dt)
+task = as_task(dt)
 task
 ```
 
-This concludes a quick revision of the basic **mlr3hf** workflow:
+Alternatively, `htsk()` can be used to create the task directly, without going through an intermediate `HFData` object:
 
-1. Search for datasets.
-2. Inspect the repository.
-3. Choose a configuration or file.
-4. Download the dataset and create a backend.
-5. Explore the data.
-6. Create an **mlr3** task.
+```{r}
+task = htsk(
+  repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
+  config = "default",
+  target = "temperature_c"
+)
+task
+```
+
+This covers the essential workflow for using `mlr3hf` to search, load, and convert Hugging Face datasets into `mlr3` tasks.
