@@ -43,6 +43,7 @@ Suggests:
     testthat (>= 3.0.0),
     arrow,
     withr,
+    xgboost,
     mlr3pipelines,
     mlr3learners,
     rpart
