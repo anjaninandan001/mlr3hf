@@ -1,10 +1,13 @@
 #' @import mlr3misc
 #' @importFrom mlr3 as_task
+#' @import R6
 #' @importFrom R6 R6Class
 #' @importFrom mlr3 tsk
 #' @importFrom mlr3 as_data_backend
 #' @importFrom mlr3 as_task TaskClassif TaskRegr
-#' @importFrom checkmate assert_string assert_flag assert_count assert_choice assert_character assert_int 
+#' @importFrom checkmate assertCharacter assertInt
+#' @importFrom checkmate assert_string assert_flag assert_count assert_choice
+#' @importFrom checkmate assert_string assert_character assert_choice
 NULL
 #' mlr3hf: Hugging Face datasets for mlr3
 #'
@@ -42,7 +45,6 @@ NULL
 #' @docType package
 #' @name mlr3hf
 "_PACKAGE"
-
 .onLoad <- function(libname, pkgname) {
   mlr3::mlr_tasks$add(
     "hf",
