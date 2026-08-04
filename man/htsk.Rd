@@ -2,7 +2,8 @@
 % Please edit documentation in R/sugar.R
 \name{htsk}
 \alias{htsk}
-\title{Create an HFData object from a Hugging Face dataset}
+\title{Create an mlr3 Task from a Hugging Face dataset
+Repository ID of the dataset on the Hugging Face Hub,}
 \usage{
 htsk(
   repo_id,
@@ -11,39 +12,31 @@ htsk(
   target = NULL,
   primary_key = NULL,
   split = NULL,
+  revision = NULL,
   ...
 )
 }
 \arguments{
-\item{repo_id}{(\code{character(1)})\cr
-Repository ID of the dataset on the Hugging Face Hub,
-e.g. \code{"scikit-learn/iris"} or \code{"ibm-research/duorc"}.}
+\item{repo_id}{(\code{character(1)})\cr}
 
-\item{config}{(\code{character(1)})\cr
-Dataset configuration to load.}
+\item{config}{(\code{character(1)})\cr}
 
-\item{file_name}{(\code{character(1)})\cr
-Path to a specific dataset file within the repository. This can be used
-instead of \code{config} to load a particular file.}
+\item{file_name}{(\code{character(1)})\cr}
 
-\item{target}{(\code{character})\cr
-Name(s) of the target column(s). If \code{NULL}, the target must be specified
-later before converting to an mlr3 task.}
+\item{target}{(\code{character})\cr}
 
-\item{primary_key}{(\code{character})\cr
-Name of the column that uniquely identify each observation.}
+\item{primary_key}{(\code{character})\cr}
 
-\item{split}{(\code{character(1)})\cr
-Dataset split to load, such as \code{"train"}, \code{"test"}, or \code{"validation"}.
-If \code{NULL}, all available splits are loaded.}
+\item{split}{(\code{character(1)})\cr}
 
-\item{...}{Additional arguments passed to \code{\link{HFData}}.}
+\item{revision}{(\code{character(1)})\cr}
+
+\item{...}{Additional arguments passed to \code{\link{HFData}} and \code{\link[mlr3:as_task]{mlr3::as_task()}}.}
 }
 \value{
-An \code{\link{HFData}} object.
+An \code{\link[mlr3:Task]{mlr3::Task}} object.
 }
 \description{
-Creates an \code{\link{HFData}} object for a dataset hosted on the Hugging Face Hub.
-The returned object can be converted to an mlr3 task using
-\code{\link[mlr3:as_task]{mlr3::as_task()}} or accessed through its active bindings.
+Create an mlr3 Task from a Hugging Face dataset
+Repository ID of the dataset on the Hugging Face Hub,
 }
