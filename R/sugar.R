@@ -54,38 +54,21 @@ hfdt <- function(
         ...
     )
 }
-#' Create an mlr3 Task from a Hugging Face dataset
-#'   Repository ID of the dataset on the Hugging Face Hub, 
-#' @param repo_id (`character(1)`)\cr
-#' @param config (`character(1)`)\cr
-#' @param file_name (`character(1)`)\cr
-#' @param target (`character`)\cr
-#' @param primary_key (`character`)\cr
-#' @param split (`character(1)`)\cr
-#' @param revision (`character(1)`)\cr
-#' @param ... Additional arguments passed to [`HFData`] and [`mlr3::as_task()`].
-#' @return An [`mlr3::Task`] object. 
-#' @rdname htsk
-#' @export
-htsk<-function(
+#' @noRd
+htsk <- function(
     repo_id,
     config = NULL,
     file_name = NULL,
-    target = NULL,
-    primary_key = NULL,
     split = NULL,
-    revision = NULL,
+    target = NULL,
     ...
 ) {
-   
-as_task(HFData$new(
+    hf <- HFData$new(
         repo_id = repo_id,
         config = config,
         file_name = file_name,
-        target = target,
-        primary_key = primary_key,
         split = split,
-        revision = revision,
-        ...
-    ))
+        target = target
+    )
+    as_task(hf, ...)
 }
