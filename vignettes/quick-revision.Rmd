@@ -98,10 +98,10 @@ task = as_task(dt)
 task
 ```
 
-Alternatively, `htsk()` can be used to create the task directly, without going through an intermediate `HFData` object:
+Alternatively, `tsk()` can be used to create the task directly, without going through an intermediate `HFData` object:
 
 ```{r}
-task = htsk(
+task = tsk("hf",
   repo_id = "Shoriful025/neuromorphic_edge_computing_telemetry",
   config = "default",
   target = "temperature_c"
