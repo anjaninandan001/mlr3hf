@@ -46,26 +46,7 @@ NULL
 #' @name mlr3hf
 "_PACKAGE"
 .onLoad <- function(libname, pkgname) {
-  mlr3::mlr_tasks$add(
-    "hf",
-    function(
-      repo_id,
-      config = NULL,
-      file_name = NULL,
-      split = NULL,
-      target = NULL,
-      ...
-    ) {
-      hf <- HFData$new(
-        repo_id = repo_id,
-        config = config,
-        file_name = file_name,
-        split = split,
-        target = target
-      )
-      as_task(hf, ...)
-    }
-  )
+  mlr3::mlr_tasks$add("hf", htsk)
 }
 
 leanify_package()
