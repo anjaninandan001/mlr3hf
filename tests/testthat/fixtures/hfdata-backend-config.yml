@@ -1,0 +1,59 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://datasets-server.huggingface.co/parquet?dataset=scikit-learn%2Firis
+  response:
+    status: 200
+    headers:
+      content-type: application/json
+      date: Thu, 13 Aug 2026 08:57:34 GMT
+      vary: Accept-Encoding
+      content-encoding: gzip
+      server: uvicorn
+      cache-control: max-age=120
+      x-revision: 0bda0ce801be0fa2f464ff845a9d5ceae99aad7d
+      x-cache: Miss from cloudfront
+      via: 1.1 3e88e02e22b29e154488f67694bee190.cloudfront.net (CloudFront)
+      x-amz-cf-pop: DEL54-P8
+      x-amz-cf-id: YRAP5dFDL14XmbYRBX7WWH_V9JxYkowm6blMorcf7xn1J6388PIRfg==
+    body:
+      string: '{"parquet_files":[{"dataset":"scikit-learn/iris","config":"default","split":"train","url":"https://huggingface.co/datasets/scikit-learn/iris/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet","filename":"0000.parquet","size":5230}],"pending":[],"failed":[],"partial":false}'
+  recorded_at: 2026-08-13 08:57:34
+- request:
+    method: HEAD
+    uri: https://huggingface.co/datasets/scikit-learn/iris/resolve/refs%2Fconvert%2Fparquet/default/train/0000.parquet
+  response:
+    status: 307
+    headers:
+      content-type: text/plain; charset=utf-8
+      content-length: '309'
+      date: Thu, 13 Aug 2026 08:57:35 GMT
+      location: /api/resolve-cache/datasets/scikit-learn/iris/2f090f19d72acd9d5ccd588461bae18f86155dcb/default%2Ftrain%2F0000.parquet?%2Fdatasets%2Fscikit-learn%2Firis%2Fresolve%2Frefs%2Fconvert%2Fparquet%2Fdefault%2Ftrain%2F0000.parquet=&etag=%22481838c5146105d40cc3e2a75bf91daa07b9cb65%22
+      x-powered-by: huggingface-moon
+      x-request-id: Root=1-6a7d86ff-2ec8427903d463071b3ff1a8
+      ratelimit: '"resolvers";r=2995;t=130'
+      ratelimit-policy: '"fixed window";"resolvers";q=3000;w=300'
+      cross-origin-opener-policy: same-origin
+      referrer-policy: strict-origin-when-cross-origin
+      access-control-max-age: '86400'
+      access-control-allow-origin: https://huggingface.co
+      vary: Origin, Accept
+      access-control-expose-headers: X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      x-repo-commit: 2f090f19d72acd9d5ccd588461bae18f86155dcb
+      accept-ranges: bytes
+      x-hf-warning: 'unauthenticated; Warning: You are sending unauthenticated requests
+        to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster
+        downloads.'
+      x-hub-cache: MISS
+      content-disposition: attachment; filename*=UTF-8''0000.parquet; filename="0000.parquet";
+      content-security-policy: default-src 'none'; sandbox
+      x-linked-etag: '"481838c5146105d40cc3e2a75bf91daa07b9cb65"'
+      x-cache: Miss from cloudfront
+      via: 1.1 c13661f9455806125a56201b0ccd2b96.cloudfront.net (CloudFront)
+      x-amz-cf-pop: DEL54-P3
+      alt-svc: h3=":443"; ma=86400
+      x-amz-cf-id: P-YuK13eEQT-zP7m8hup7cj4f2a7IDbjJx2E_WY1Tk0iqfViGlwktg==
+    body:
+      string: ''
+  recorded_at: 2026-08-13 08:57:35
+recorded_with: VCR-vcr/2.1.0
