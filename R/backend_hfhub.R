@@ -23,6 +23,18 @@ backend_hfhub <- function(path, primary_key = NULL, ...) {
         if (!primary_key %in% names(data)) {
             cli::cli_abort("Column '{primary_key}' not found in data")
         }
+        if (!is.integer(data[[primary_key]])) {
+            coerced <- suppressWarnings(as.integer(data[[primary_key]]))
+            unsafe <- any(coerced != data[[primary_key]], na.rm = TRUE) ||
+                any(is.na(data[[primary_key]]) != is.na(coerced))
+
+            if (unsafe) {
+                cli::cli_abort(
+                    "Primary key column '{primary_key}' (class: {class(data[[primary_key]])[1L]}) cannot be safely coerced to integer (values too large or non-whole). mlr3 requires an integer primary key."
+                )
+            }
+            data.table::set(data, j = primary_key, value = coerced)
+        }
     }
 
     mlr3::as_data_backend(data, primary_key = primary_key)

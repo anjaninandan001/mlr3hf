@@ -28,6 +28,23 @@ nano_parquet <- function(path, primary_key = NULL, ...) {
         if (!primary_key %in% names(combined)) {
             cli::cli_abort("Column '{primary_key}' not found in data")
         }
+        id_col <- combined[[primary_key]]
+
+        if (!is.integer(id_col)) {
+            coerced <- suppressWarnings(as.integer(id_col))
+            unsafe <- any(coerced != id_col, na.rm = TRUE) ||
+                any(is.na(id_col) != is.na(coerced))
+
+            if (unsafe) {
+                stop(sprintf(
+                    "Primary key column '%s' (class: %s) cannot be safely coerced to integer (values too large or non-whole). mlr3 requires an integer primary key.",
+                    primary_key,
+                    class(id_col)[1L]
+                ))
+            }
+
+            data.table::set(combined, j = primary_key, value = coerced)
+        }
     }
 
     splits <- split(combined[[primary_key]], combined[["..split_tmp"]])
