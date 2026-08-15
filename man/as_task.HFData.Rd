@@ -4,7 +4,7 @@
 \alias{as_task.HFData}
 \title{Coerce an HFData Object to an mlr3 Task}
 \usage{
-\method{as_task}{HFData}(x, target_names = NULL, task_type = c("auto", "classif", "regr"), ...)
+\method{as_task}{HFData}(x, target_names = NULL, task_type = NULL, ...)
 }
 \arguments{
 \item{x}{(\code{HFData})\cr The \code{HFData} object to convert.}

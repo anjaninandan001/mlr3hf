@@ -12,6 +12,7 @@ hfdt(
   primary_key = NULL,
   split = NULL,
   revision = NULL,
+  task_type = c("auto", "classif", "regr"),
   ...
 )
 }
@@ -41,6 +42,9 @@ If \code{NULL}, all available splits are loaded.}
 
 \item{revision}{(\code{character(1)}|\code{NULL})\cr
 Revision of the dataset to load.}
+
+\item{task_type}{(\code{character(1)})\cr
+Type of task for the dataset. One of \code{"auto"}, \code{"classif"}, or \code{"regr"}. If \code{"auto"}, the task type is inferred from the target column(s).}
 
 \item{...}{Additional arguments passed to \code{\link{HFData}}.}
 }
