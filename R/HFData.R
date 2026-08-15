@@ -329,10 +329,10 @@ as_data_backend.HFData <- function(data, ...) {
 as_task.HFData <- function(
     x,
     target_names = NULL,
-    task_type = c("auto", "classif", "regr"),
+    task_type = NULL,
     ...
 ) {
-    task_type <- match.arg(task_type)
+    task_type <- if (!is.null(task_type)) task_type else x$task_type
     target <- if (!is.null(target_names)) target_names else x$target
 
     if (length(target) > 1L) {
@@ -355,19 +355,9 @@ as_task.HFData <- function(
             "classif"
         } else if (is.numeric(col) || is.integer(col)) {
             "regr"
-        } else if (is.character(col)) {
-            n_unique <- length(unique(col))
-            n_total <- length(col)
-            if (n_unique <= 50 || n_unique / n_total < 0.1) {
-                "classif"
-            } else {
-                stopf(
-                    "Target '%s' is character with %d unique values out of %d rows  looks like free text. Please specify task_type explicitly."
-                )
-            }
         } else {
             stopf(
-                "Unable to determine task type for target '%s' (class: %s).",
+                "Unable to determine task type for target '%s' (class: %s). Specify task_type explicitly as 'classif' or 'regr'.",
                 target,
                 class(col)[1L]
             )

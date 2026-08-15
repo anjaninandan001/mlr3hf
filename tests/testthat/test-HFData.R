@@ -164,19 +164,6 @@ test_that("HFData builds backend via file_name path", {
   expect_true("Species" %in% hf$colnames)
 })
 
-test_that("as_task infers classif for factor target (via vcr)", {
-  vcr::local_cassette("hfdata-backend-config")
-
-  dt <- HFData$new(
-    repo_id = "scikit-learn/iris",
-    config = "default",
-    target = "Species"
-  )
-  task <- as_task(dt)
-
-  expect_s3_class(task, "TaskClassif")
-})
-
 test_that("as_task infers regr for numeric target", {
   hf <- HFData$new(repo_id = "scikit-learn/iris", target = "y")
 

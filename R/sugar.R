@@ -28,6 +28,8 @@
 #'   If `NULL`, all available splits are loaded.
 #' @param revision (`character(1)`|`NULL`)\cr
 #'   Revision of the dataset to load.
+#' @param task_type (`character(1)`)\cr
+#'   Type of task for the dataset. One of `"auto"`, `"classif"`, or `"regr"`. If `"auto"`, the task type is inferred from the target column(s).
 #' @param ... Additional arguments passed to [`HFData`].
 #'
 #' @return An [`HFData`] object.
@@ -41,6 +43,7 @@ hfdt <- function(
     primary_key = NULL,
     split = NULL,
     revision = NULL,
+    task_type = c("auto", "classif", "regr"),
     ...
 ) {
     HFData$new(
@@ -50,25 +53,24 @@ hfdt <- function(
         target = target,
         primary_key = primary_key,
         split = split,
-        revision = NULL,
+        revision = revision,
+        task_type = task_type,
         ...
     )
 }
-#' @noRd
-htsk <- function(
-    repo_id,
-    config = NULL,
-    file_name = NULL,
-    split = NULL,
-    target = NULL,
+
+#' @noRd   
+htsk <- function(repo_id, config = NULL, file_name = NULL,
+                 split = NULL, target = NULL,primary_key=NULL, task_type = c("auto", "classif", "regr"), ...) {
+  hf = HFData$new(
+    repo_id   = repo_id,
+    config    = config,
+    file_name = file_name,
+    split     = split,
+    target    = target,
+    primary_key = primary_key,
+    task_type = task_type,
     ...
-) {
-    hf <- HFData$new(
-        repo_id = repo_id,
-        config = config,
-        file_name = file_name,
-        split = split,
-        target = target
-    )
-    as_task(hf, ...)
+  )
+  as_task(hf, ...)
 }

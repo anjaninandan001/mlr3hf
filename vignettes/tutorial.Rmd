@@ -1,5 +1,5 @@
 ---
-title: "Getting Started"
+title: "tutorial"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Getting Started}
@@ -38,22 +38,28 @@ library(mlr3)
 hf_data_parquet = hfdt(
   repo_id = "scikit-learn/iris",
   config = "default",
-  target = "Species"
+  target = "Species",
+  task_type = "classif",
+  primary_key = "Id"
 )
 
 hf_data_hfhub = hfdt(
   repo_id = "scikit-learn/iris",
   file_name = "Iris.csv",
-  target = "Species"
+  target = "Species",
+  task_type="classif",
+  primary_key="Id"
 )
 ```
 
+* **Note**: primary_key is optional. If not specified, a new column named `mlr3_row_id` is generated automatically and used as the row identifier. it is in backend but excluded from the task's feature columns.
 ### Arguments
 
 Not all arguments are required simultaneously. The following rules apply:
 
 * `repo_id` and `target` are required.
 * `config` and `file_name` are mutually exclusive — only one of the two may be specified.
+* `task_type` is optional and defaults to `"auto"`. But specifying it explicitly is recommended, as it allows `mlr3hf` to create the correct type of `mlr3` task (classification or regression) when converting the dataset.
 * All other arguments are optional.
 
 | Argument | Description |
@@ -64,6 +70,7 @@ Not all arguments are required simultaneously. The following rules apply:
 | `target` | The name of the target feature to be predicted (the output/label column). |
 | `primary_key` | The name of an existing column to use as the row identifier. If `NULL` (the default), a new column named `mlr3_row_id` is generated automatically. In either case, this column remains part of the backend but is excluded from the task's feature columns. |
 | `task_type` | The type of task to create: `"classif"` for classification or `"regr"` for regression. |
+| `revision` | The revision of the dataset to use. It may be a branch name, tag, or commit hash. |
 
 ### Active Bindings
 
@@ -135,7 +142,9 @@ An `HFData` object can be converted directly into an `mlr3::Task`.
 hf_data = hfdt(
   repo_id = "scikit-learn/iris",
   config = "default",
-  target = "Species"
+  target = "Species",
+  task_type = "classif",
+  primary_key = "Id"
 )
 ```
 
@@ -174,7 +183,8 @@ library(mlr3learners)
 hf_data = hfdt(
   repo_id = "a4n9i/scikit_iris",
   config = "default",
-  target = "Species"
+  target = "Species",
+  task_type= "classif"
 )
 
 task = as_task(hf_data)
@@ -281,7 +291,7 @@ The validation task is only used by learners supporting the `"validation"` prope
 In addition to `HFData` and the sugar function `hfdt()`, `mlr3hf` allows Hugging Face datasets to be created directly using `mlr3`'s standard `tsk()` interface by providing the required dataset parameters.
 
 ```{r}
-task = tsk("hf", repo_id = "scikit-learn/iris", config = "default", target = "Species")
+task = tsk("hf", repo_id = "scikit-learn/iris", config = "default", target = "Species",task_type="classif")
 task
 ```
 
