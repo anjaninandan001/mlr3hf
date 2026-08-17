@@ -150,6 +150,7 @@ test_that("backend_hfhub-created backend works with mlr3 resampling", {
 })
 
 test_that("backend_hfhub errors when primary_key column cannot be coerced to integer", {
+  testthat::local_reproducible_output()
   csv.path <- withr::local_tempfile(fileext = ".csv")
   utils::write.csv(
     data.frame(
@@ -162,6 +163,6 @@ test_that("backend_hfhub errors when primary_key column cannot be coerced to int
 
   expect_error(
     backend_hfhub(csv.path, primary_key = "id"),
-    "Primary key column 'id' (class: character) cannot be safely coerced to\ninteger (values too large or non-whole). mlr3 requires an integer primary key."
+    "Primary key column 'id' (class: character) cannot be safely coerced to integer (values too large or non-whole). mlr3 requires an integer primary key."
   ,fixed = TRUE)
 })
