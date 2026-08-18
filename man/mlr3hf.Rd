@@ -50,16 +50,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: Toby Hocking \email{toby.hocking@r-project.org}
+\strong{Maintainer}: Sebastian Fischer \email{sebastian.fischer@stat.uni-muenchen.de}
 
 Authors:
 \itemize{
-  \item Sebastian Fischer \email{sebastian.fischer@stat.uni-muenchen.de}
-}
-
-Other contributors:
-\itemize{
-  \item Anjani Nandan \email{anjaninandan599@gmail.com} [contributor]
+  \item Toby Hocking \email{toby.hocking@r-project.org}
+  \item Anjani Nandan \email{anjaninandan599@gmail.com}
 }
 
 }
