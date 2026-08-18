@@ -160,7 +160,7 @@ cache_hfhub <- function(
 
     fs::dir_create(fs::path(storage_folder, "blobs"), recurse = TRUE)
     fs::dir_create(
-        fs::path(storage_folder, "snapshots", commit_hash),
+        fs::path_dir(snapshot_path),
         recurse = TRUE
     )
 
