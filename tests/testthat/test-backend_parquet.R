@@ -178,3 +178,16 @@ test_that("nano_parquet splits can be used as a predefined train/test resampling
   predicted <- rr$predictions()[[1]]
   expect_equal(length(predicted$row_ids), length(result$splits$test))
 })
+
+test_that("nano_parquet errors when primary_key column cannot be coerced to integer", {
+  parquet.path <- withr::local_tempfile(fileext = ".parquet")
+  nanoparquet::write_parquet(
+    data.frame(id = c("a", "b", "c"), x = 1:3),
+    parquet.path
+  )
+
+  expect_error(
+    nano_parquet(list(train = parquet.path), primary_key = "id"),
+    "Primary key column 'id' \\(class: character\\) cannot be safely coerced to integer"
+  )
+})
