@@ -26,8 +26,5 @@ overridden explicitly.
 
 When \code{task_type = "auto"}, the task type is inferred from the class of
 the target column: factor and logical columns become classification
-tasks, numeric and integer columns become regression tasks, and
-character columns become classification tasks only if they have at most
-50 unique values or a unique-value ratio below 10\%; otherwise an error is
-raised asking for an explicit \code{task_type}.
+tasks, numeric and integer columns become regression tasks.
 }

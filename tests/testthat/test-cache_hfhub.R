@@ -44,3 +44,27 @@ test_that("cache_hfhub returns same path on second call", {
 
     expect_equal(iris.path.fresh, iris.path.cached)
 })
+
+test_that("cache_hfhub handles filenames with subdirectories", {
+    repo_id <- "ibm-research/duorc"
+    file_name <- "ParaphraseRC/test-00000-of-00001.parquet"
+    revision <- "2de12436b8945030c283bf4af83925d60efe10c6"
+
+    path <- cache_hfhub(
+        repo_id = repo_id,
+        file_name = file_name,
+        revision = revision
+    )
+
+    expect_true(fs::file_exists(path))
+
+    expect_equal(
+        fs::path_file(path),
+        "test-00000-of-00001.parquet"
+    )
+
+    expect_equal(
+        fs::path_file(fs::path_dir(path)),
+        "ParaphraseRC"
+    )
+})
