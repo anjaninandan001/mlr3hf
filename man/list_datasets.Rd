@@ -9,6 +9,8 @@ list_datasets(
   chunk_size = 100,
   search = NULL,
   author = NULL,
+  fetch_meta = TRUE,
+  max_concurrent = 10,
   ...
 )
 }
@@ -28,12 +30,21 @@ Optional search keyword to filter datasets by. Default is \code{NULL}.}
 Optional author/organization name to filter datasets by.
 Default is \code{NULL}.}
 
+\item{fetch_meta}{(\code{logical(1)})\cr
+If \code{TRUE} (default), also fetches \code{nrows} and \code{ncols} for each dataset
+via \code{fetch_dataset_meta()}. If \code{FALSE}, skips this extra network call
+and returns only \code{id}, \code{gated}, \code{downloads}.}
+
+\item{max_concurrent}{(\code{integer(1)})\cr
+Maximum number of simultaneous connections used when fetching metadata.
+Default is \code{10}.}
+
 \item{...}{Additional arguments passed on to \code{get_with_retry()}, e.g.
 \code{max_retries}.}
 }
 \value{
-(\code{data.table()}) of results with columns \code{id}, \code{gated}, and
-\code{downloads}, or an empty \code{data.table()} if no datasets are found.
+(\code{data.table()}) of results with columns \code{id}, \code{nrows}, and
+\code{ncols}   or an empty \code{data.table()} if no datasets are found.
 }
 \description{
 Query datasets hosted on \url{https://huggingface.co/datasets} via the
@@ -49,6 +60,4 @@ dat <- list_datasets(author = "a4n9i")
 }
 \references{
 \url{https://huggingface.co/docs/hub/api}
-
-#' @importFrom data.table data.table as.data.table rbindlist
 }

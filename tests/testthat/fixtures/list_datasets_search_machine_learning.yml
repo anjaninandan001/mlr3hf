@@ -1,0 +1,37 @@
+http_interactions:
+- request:
+    method: GET
+    uri: https://huggingface.co/api/datasets?limit=3&search=machine+learning
+  response:
+    status: 200
+    headers:
+      access-control-allow-origin: https://huggingface.co
+      access-control-expose-headers: X-Repo-Commit,X-Request-Id,X-Error-Code,X-Error-Message,X-Total-Count,ETag,Link,Accept-Ranges,Content-Range,X-Linked-Size,X-Linked-ETag,X-Xet-Hash
+      access-control-max-age: '86400'
+      content-encoding: gzip
+      content-type: application/json; charset=utf-8
+      cross-origin-opener-policy: same-origin
+      date: Wed, 19 Aug 2026 17:55:44 GMT
+      etag: W/"665-CgZgkS7svnXWmDwvw8CZalvBIFc"
+      link: <https://huggingface.co/api/datasets?limit=3&search=machine+learning&cursor=eyIkb3IiOlt7InRyZW5kaW5nU2NvcmUiOjAsIl9pZCI6eyIkZ3QiOiI2NDQwZGYxZDAwNjU1MGYxZWQ1ZmNjOGQifX0seyJ0cmVuZGluZ1Njb3JlIjp7IiRsdCI6MH19LHsidHJlbmRpbmdTY29yZSI6bnVsbH1dfQ%3D%3D>;
+        rel="next"
+      ratelimit: '"api";r=498;t=241'
+      ratelimit-policy: '"fixed window";"api";q=500;w=300'
+      referrer-policy: strict-origin-when-cross-origin
+      server-timing: mongo1-0;dur=9.999835000373423
+      vary:
+      - Origin
+      - Accept-Encoding
+      via: 1.1 927fce288074c4c44e447c7ebb2913fa.cloudfront.net (CloudFront)
+      x-amz-cf-id: 9ayZs4cCDYYk5GXDiKQchyobMw2OG9C3tPb1bQzjprMmfKkfyCsZoA==
+      x-amz-cf-pop: DEL51-P7
+      x-cache: Miss from cloudfront
+      x-powered-by: huggingface-moon
+      x-request-id: Root=1-6a85ee20-7f4398b17abc0c44223af766
+    body:
+      string: '[{"_id":"62faed4defd2de854932614e","id":"shwetha729/quantum-machine-learning","author":"shwetha729","disabled":false,"gated":false,"lastModified":"2022-08-16T01:08:21.000Z","likes":1,"trendingScore":0,"private":false,"sha":"ad1769db777807a5883537be08df160ef76e0e7a","description":"a
+        continuous data scrape of arxiv and google scholar papers of quantum machine
+        learning papers particularly regarding climate. \n","downloads":13,"tags":["license:gpl","size_categories:n<1K","format:csv","modality:tabular","modality:text","library:datasets","library:pandas","library:mlcroissant","library:polars","region:us"],"createdAt":"2022-08-16T01:05:17.000Z","key":""},{"_id":"63a0dc423c8841cfe2cfd46f","id":"autoevaluate/autoeval-eval-hendrycks_test-machine_learning-af1921-2535877708","author":"autoevaluate","disabled":false,"gated":false,"lastModified":"2022-12-19T21:48:54.000Z","likes":0,"trendingScore":0,"private":false,"sha":"e65767a2a08d02a6dfb5210575249f7ecea50f0f","downloads":3,"tags":["region:us"],"createdAt":"2022-12-19T21:48:50.000Z","key":""},{"_id":"6440df1d006550f1ed5fcc8d","id":"joey234/mmlu-machine_learning-neg","author":"joey234","disabled":false,"gated":false,"lastModified":"2023-04-20T06:43:45.000Z","likes":1,"trendingScore":0,"private":false,"sha":"3250defbd607bb16919f763336b269ef362d4375","description":"\n\t\n\t\t\n\t\tDataset
+        Card for \"mmlu-machine_learning-neg\"\n\t\n\nMore Information needed\n","downloads":17,"tags":["size_categories:n<1K","format:parquet","modality:text","library:datasets","library:pandas","library:mlcroissant","library:polars","region:us"],"createdAt":"2023-04-20T06:43:41.000Z","key":""}]'
+  recorded_at: 2026-08-19 17:55:44
+recorded_with: VCR-vcr/2.1.0
