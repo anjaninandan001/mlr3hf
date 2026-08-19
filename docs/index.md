@@ -1,15 +1,11 @@
+# mlr3hf ![](reference/figures/block.png)
 
-# mlr3hf <img src="man/figures/block.png" align="right" width = "120" />
-
-Package website: [release](writing/soon) \| [dev](writing/soon)
+Package website:
+[release](https://anjaninandan001.github.io/mlr3hf/writing/soon) \|
+[dev](https://anjaninandan001.github.io/mlr3hf/writing/soon)
 
 Integration of [Hugging Face](https://huggingface.co) datasets with the
 [`mlr3`](https://mlr3.mlr-org.com/) ecosystem.
-
-<!-- badges: start -->
-
-[![R-CMD-check](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/anjaninandan001/mlr3hf/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
 
 ## What is `mlr3hf`?
 
@@ -24,7 +20,8 @@ data backends and tasks.
 the original dataset files stored in a repository.
 
 As a brief demo, we download the Iris dataset from Hugging Face, convert
-it into an `mlr3::Task`, and perform a simple resampling experiment.
+it into an [`mlr3::Task`](https://mlr3.mlr-org.com/reference/Task.html),
+and perform a simple resampling experiment.
 
 ``` r
 hf_data <- hfdt(
@@ -47,8 +44,9 @@ rr$aggregate()
 #>       0.02
 ```
 
-The same dataset can also be converted directly into an `mlr3::Task`
-using `tsk()`:
+The same dataset can also be converted directly into an
+[`mlr3::Task`](https://mlr3.mlr-org.com/reference/Task.html) using
+[`tsk()`](https://mlr3.mlr-org.com/reference/mlr_sugar.html):
 
 ``` r
 task <- tsk(
@@ -73,9 +71,10 @@ task
 
 `mlr3hf` provides two complementary entry points.
 
-`hfdt()` creates an `HFData` object that provides access to the dataset
-and its metadata. The object can subsequently be converted into an
-`mlr3` `DataBackend` or `Task`.
+[`hfdt()`](https://anjaninandan001.github.io/mlr3hf/reference/hfdt.md)
+creates an `HFData` object that provides access to the dataset and its
+metadata. The object can subsequently be converted into an `mlr3`
+`DataBackend` or `Task`.
 
 ``` r
 hf_data <- hfdt(
@@ -119,7 +118,9 @@ hf_data$splits
 #> [145] 145 146 147 148 149 150
 ```
 
-`tsk()` is a convenience function that creates an `mlr3::Task` directly,
+[`tsk()`](https://mlr3.mlr-org.com/reference/mlr_sugar.html) is a
+convenience function that creates an
+[`mlr3::Task`](https://mlr3.mlr-org.com/reference/Task.html) directly,
 without explicitly creating an `HFData` object first.
 
 ### Loading the original dataset files
@@ -165,7 +166,8 @@ loading strategy:
   **canonical dataset files** are supported.
 - Predefined `train`, `test`, and `validation` splits can be used in
   `mlr3` resampling workflows.
-- Datasets can be searched and retrieved using `list_datasets()`.
+- Datasets can be searched and retrieved using
+  [`list_datasets()`](https://anjaninandan001.github.io/mlr3hf/reference/list_datasets.md).
 - Private and gated Hugging Face datasets can be accessed using
   authentication tokens.
 - Downloaded datasets are cached locally to avoid repeated downloads.
@@ -215,7 +217,7 @@ rr$aggregate()
 ## Listing Datasets
 
 Datasets available on Hugging Face can be searched using
-`list_datasets()`.
+[`list_datasets()`](https://anjaninandan001.github.io/mlr3hf/reference/list_datasets.md).
 
 For example, the following searches for five datasets related to machine
 learning:
@@ -284,8 +286,9 @@ options(
 
 ## Documentation
 
-The [package website](writing/soon) contains the complete documentation
-and examples for `mlr3hf`.
+The [package
+website](https://anjaninandan001.github.io/mlr3hf/writing/soon) contains
+the complete documentation and examples for `mlr3hf`.
 
 For more information about data backends and the `mlr3` ecosystem, see
 the corresponding
@@ -302,7 +305,8 @@ Hub.
 participation and feedback.
 
 If you encounter a bug, have a question, or have a suggestion, please
-open an [issue](writing/soon) on GitHub.
+open an [issue](https://anjaninandan001.github.io/mlr3hf/writing/soon)
+on GitHub.
 
 In case of problems or bugs, it is often helpful to provide a **minimum
 working example** that reproduces the behaviour.
