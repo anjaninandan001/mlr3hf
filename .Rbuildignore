@@ -6,3 +6,4 @@
 ^docs$
 ^docs/
 ^design$
+^pkgdown$

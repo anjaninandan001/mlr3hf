@@ -13,7 +13,7 @@ test_that("list_dataset column types are as expected", {
 
     datasets <- list_datasets(num_of_dataset = 5)
     expect_type(datasets$id, "character")
-    expect_type(datasets$gated, "character")
+    expect_type(datasets$gated, "logical")
     expect_type(datasets$downloads, "integer")
 })
 
